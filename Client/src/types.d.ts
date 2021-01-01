@@ -1,0 +1,1 @@
+export type errorMap = { field: string, error: Record<string, string> }

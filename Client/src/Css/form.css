@@ -1,0 +1,245 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 400px;
+    grid-row: 1/2;
+    grid-column: 1/2;
+    font-family: "Poppins", sans-serif;
+}
+
+[data-tooltip]::after {
+    content: attr(data-tooltip);
+}
+
+.form-label::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 23%;
+    border-width: 15px;
+    border-style: solid;
+    border-color: transparent transparent #ee52229a transparent;
+}
+
+.form-label {
+    display: flex;
+    flex-direction: row;
+    font-size: 16px;
+    position: absolute;
+    padding: 8px;
+    bottom: -120%;
+    z-index: 9999;
+    right: 5%;
+    left: 15%;
+    color: rgb(14, 51, 6);
+    border-radius: 10px;
+    background: #e9562a9a;
+    border: 1.5px solid #ee1616;
+    pointer-events: none;
+    /*display: none;*/
+    /*-webkit-text*/
+    /*border: 3px solid #7a7878;*/
+    /*-webkit-box-shadow: 1px 5px 31px 14px rgba(240, 240, 240, 1);
+    -moz-box-shadow: 1px 5px 31px 14px rgba(240, 240, 240, 1);
+    box-shadow: 1px 5px 31px 14px rgba(240, 240, 240, 1);*/
+}
+
+
+/*.error {
+    display: flex;
+}*/
+
+.warning-icon {
+    width: 46px !important;
+    height: 46px !important;
+    color: #f7e713;
+    margin-right: 10px;
+}
+
+
+/*.input-field-error {
+    display: flex;
+    width: 100%;
+    height: 4rem;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    border: 1px solid red;
+    font-weight: 500;
+    max-width: 300px;
+    color: black;
+    border-radius: 08px;
+}
+
+.input-field-error input:focus .input-field-error {
+    animation: errorText 1s 0.2s 1 forwards linear;
+}*/
+
+
+/*.input-field-error::before {
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 2rem;
+    top: 0;
+    left: 0;
+    background-color: white;
+}*/
+
+
+/*.input-field-error>span {
+    font-weight: 500;
+    font-size: 16;
+    font-family: "Poppins", sans-serif;
+}*/
+
+@keyframes errorText() {
+    0% {
+        opacity: 0;
+    }
+    25% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.75;
+    }
+    75% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.signUp-form {
+    z-index: 1;
+    opacity: 0;
+}
+
+.signIn-form {
+    z-index: 2;
+}
+
+.form-title {
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 2;
+    color: #444;
+    margin-bottom: 10px;
+}
+
+.input-field {
+    display: grid;
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    flex-direction: row;
+    grid-template-columns: 15% 85%;
+    height: 55px;
+    align-items: center;
+    border-radius: 55px;
+    margin-top: 10px;
+    background-color: #f0f0f0;
+    padding: 0.5rem;
+}
+
+.input-field>input {
+    background: none;
+    border: none;
+    outline: none;
+    line-height: 1;
+    font-size: 1rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.input-field>input::placeholder {
+    color: #a0a0a0;
+    font-weight: 600;
+}
+
+.input-icon {
+    text-align: center;
+    line-height: 55px;
+    color: #a0a0a0;
+    margin-left: 20px;
+}
+
+.input-field-forgot-password {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.input-field-forgot-password>.input-field-forgot-password-link {
+    text-decoration: none !important;
+    font-size: 0.8em !important;
+    color: rgb(70, 69, 69);
+    margin-right: 15px !important;
+}
+
+.input-field-forgot-password>.input-field-forgot-password-link:hover {
+    text-decoration: underline !important;
+}
+
+.btn {
+    width: 150px;
+    height: 49px;
+    border-radius: 50px;
+    background-color: #5995fd;
+    cursor: pointer;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 600;
+    border: none;
+    outline: none;
+    margin: 10px 0px;
+    transition: 0.2s ease-out;
+}
+
+.btn:hover {
+    background-color: #fff;
+    color: #5995fd;
+    border: 1px solid #5995fd;
+}
+
+.social-text {
+    font-size: 1rem;
+    padding: 0.7rem 0;
+}
+
+.social-media {
+    display: flex;
+    justify-content: space-between;
+}
+
+.social-icon {
+    width: 46px !important;
+    height: 20px !important;
+}
+
+.social-icons {
+    width: 46px;
+    height: 46px;
+    border: 1px solid #333;
+    margin: 0 0.45rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.social-icons:hover .social-icon {
+    color: #020202;
+}
+
+.social-icons:hover {
+    border-color: #5995fd;
+}

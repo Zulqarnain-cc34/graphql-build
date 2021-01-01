@@ -1,0 +1,123 @@
+.navbar {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    height: 9vh;
+    min-height: 70px;
+    background-color: #fff;
+    font-family: "Poppins", sans-serif;
+    border-bottom: 1px solid #edeff1;
+    padding: 14px;
+    background-color: transparent;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    justify-content: center;
+}
+
+.navbar-left>h2 {
+    font-weight: 500;
+    font-size: 1.5rem;
+    color: #0f0f0f;
+    margin-left: 10px;
+}
+
+.navbar-left-logo {
+    width: 40px !important;
+    height: 40px !important;
+    color: #00d9c0;
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar-right .navbar-input-field {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 15% 85%;
+    border-radius: 55px;
+    height: 40px;
+    min-height: 40px;
+    margin-left: 20px;
+    width: 300px;
+    padding: 5px;
+    background-color: #eff2f5;
+}
+
+.navbar-right .navbar-input-field>input {
+    border: none;
+    outline: none;
+    background-color: #eff2f5;
+}
+
+.navbar-right .navbar-input-field>input::placeholder {
+    color: #a9abb1;
+}
+
+.navbar-right .navbar-input-field>input :hover .navbar-right .navbar-input-field {
+    border: 1px solid blue;
+}
+
+.navbar-search-icon {
+    color: #a9abb1 !important;
+}
+
+.navbar-right-options {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.navbar-right .navbar-input-field .navbar-search-icon {
+    margin-left: 5px !important;
+}
+
+.navbar-right-options-icons {
+    display: flex;
+}
+
+.navbar-right-options-icons>h2 {
+    margin-left: 10px;
+}
+
+.navbar-right-options-icons:hover .navbar-options-icon {
+    color: #2e81f4 !important;
+    background-color: #eff2f5 !important;
+}
+
+.navbar-right-user {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.navbar-right-btn {
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    text-decoration: none;
+    color: rgb(119, 119, 119);
+}
+
+.navbar-right-btn:hover {
+    color: rgb(36, 34, 34);
+    text-decoration: underline;
+}
+
+
+/*@mediaquery (max-width: 767px) {
+    .navbar-right .navbar-input-field>input {
+        display: none;
+    }
+}*/
