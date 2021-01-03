@@ -1,5 +1,5 @@
 import React from "react";
-import "../Css/chat.css";
+import "../../../Css/Components/Home/chat.css";
 import { Chatarea } from "./Chatarea";
 import { Chatheader } from "./Chatheader";
 interface ChatProps { }

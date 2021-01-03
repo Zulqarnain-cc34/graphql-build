@@ -1,8 +1,8 @@
 import React from "react";
-import "../Css/home.css";
-import { Chat } from "../Component/HomePageComponents/Chat";
-import { Infobar } from "../Component/HomePageComponents/Infobar";
-import { Sidebar } from "../Component/HomePageComponents/Sidebar";
+import "../../Css/pages/home.css";
+import { Chat } from "../Component/Home/Chat";
+import { Infobar } from "../Component/Home/Infobar";
+import { Sidebar } from "../Component/Home/Sidebar";
 
 interface HomeProps { }
 

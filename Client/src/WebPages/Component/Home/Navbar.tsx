@@ -8,7 +8,7 @@ import { faComments } from "@fortawesome/free-solid-svg-icons";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { Avatar, IconButton } from "@material-ui/core";
 import { useLogoutMutation, useMeQuery } from "../../../generated/graphql";
-import "../Css/navbar.css";
+import "../../../Css/Components/Home/navbar.css";
 import { Link } from "react-router-dom";
 
 interface NavbarProps { }

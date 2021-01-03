@@ -8,7 +8,7 @@
     justify-content: space-between;
     flex: 0.1;
     background-color: transparent;
-    border-bottom: 1px solid rgb(78, 78, 78);
+    border-bottom: 1px solid rgb(44, 44, 44);
 }
 
 .header-left {
@@ -19,14 +19,14 @@
 
 .header-left>h1 {
     font-size: 20px;
-    color: rgb(209, 207, 207);
+    color: rgb(255, 255, 255);
     font-weight: 450;
     margin-bottom: 5px;
 }
 
 .header-left-info-Add {
     display: flex;
-    color: rgb(119, 119, 119);
+    color: #cacaca;
     align-items: center;
     margin-left: 10px;
     font-size: 12px;
@@ -36,6 +36,7 @@
 
 .header-left-info-Add>p {
     margin-left: 5px;
+    font-weight: 450;
 }
 
 .header-left-info-Addicon {
@@ -51,12 +52,12 @@
 
 .header-left-info>p {
     font-size: 12px;
-    color: rgb(119, 119, 119);
-    font-weight: 400;
+    color: #cacaca;
+    font-weight: 450;
 }
 
 .header-right-icons {
-    color: rgb(119, 119, 119);
+    color: #c7c7c7;
 }
 
 .header-right {

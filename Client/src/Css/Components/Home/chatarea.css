@@ -1,0 +1,8 @@
+.chatarea {
+    display: flex;
+    flex: 0.9;
+    background-color: transparent;
+    background: url("https://discord.com/assets/b5eb2f7d6b3f8cc9b60be4a5dcf28015.svg");
+    background-repeat: no-repeat;
+    background-position: 45% 58%;
+}

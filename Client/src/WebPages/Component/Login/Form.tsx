@@ -5,7 +5,7 @@ import {
     faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useState } from "react";
-import "../Css/form.css";
+import "../../../Css/Components/Login/form.css";
 import { faEnvelope, faUser } from "@fortawesome/free-regular-svg-icons";
 import { useLoginMutation, useRegisterMutation } from "../../../generated/graphql";
 import { toErrorMap } from "../../../utils/toErrorMap";

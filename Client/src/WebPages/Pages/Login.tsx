@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { Form } from "../Component/LoginPageComponents/Form";
-import "../Css/login.css";
+import { Form } from "../Component/Login/Form";
+import "../../Css/pages/login.css";
 import {
     faGoogle,
     faFacebook,
     faTwitter,
     faLinkedin,
 } from "@fortawesome/free-brands-svg-icons";
-import Rocket from "../img/rocket.svg";
-import Table from "../img/table.svg";
+import Rocket from "../../img/rocket.svg";
+import Table from "../../img/table.svg";
 interface LoginProps { }
 
 const Login: React.FC<LoginProps> = () => {

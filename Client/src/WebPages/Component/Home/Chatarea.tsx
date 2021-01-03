@@ -1,7 +1,7 @@
 import React from "react";
-import "../Css/chatarea.css";
+import "../../../Css/Components/Home/chatarea.css";
 
-interface ChatareaProps {}
+interface ChatareaProps { }
 
 export const Chatarea: React.FC<ChatareaProps> = () => {
     return <div className="chatarea">chatarea</div>;

@@ -3,7 +3,7 @@ import { useParams } from "react-router";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 import { Link, useHistory } from "react-router-dom";
-import "../Css/changepassword.css";
+import "../../Css/pages/changepassword.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useChangePasswordMutation } from "../../generated/graphql";
 import { toErrorMap } from "../../utils/toErrorMap";

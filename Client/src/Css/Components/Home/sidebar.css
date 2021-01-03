@@ -1,7 +1,8 @@
 .sidebar {
     display: flex;
     flex: 0.23;
-    background-color: #141314;
+    background-color: #2f3136;
+    font-size: 14px;
 }
 
 .sidebar-options {
@@ -9,13 +10,13 @@
     flex-direction: column;
     flex: 0.22;
     padding: 25px 6px;
-    background-color: #161316;
+    background-color: #202225;
     justify-content: space-between;
     align-items: center;
 }
 
 .sidebar-groups-hr {
-    border-color: rgb(58, 58, 58);
+    border-color: #222427;
     width: 100%;
     margin-bottom: 5px;
 }
@@ -50,13 +51,13 @@
     width: 100%;
     /*height: 3rem;*/
     align-items: center;
-    background-color: rgba(78, 78, 78, 0.699);
+    background-color: #202225;
     border-radius: 10px;
     padding: 6px 10px;
 }
 
 .sidebar-groups-searchicon {
-    color: rgba(90, 90, 90, 0.699);
+    color: #72767d;
 }
 
 .sidebar-groups-searchbar>input {
@@ -67,11 +68,13 @@
     border: none;
     text-decoration: none;
     margin-left: 6px;
+    color: #81858a;
+    font-weight: 470;
     /*pad*/
 }
 
 .sidebar-groups-searchbar>input ::placeholder {
-    color: rgba(90, 90, 90, 0.699);
+    color: #5e6166;
 }
 
 .sidebar-options-features {
@@ -106,10 +109,10 @@
 .sidebar-options-icons {
     width: 22px !important;
     height: 22px !important;
-    color: rgba(78, 78, 78, 0.699) !important;
+    color: rgb(109, 108, 108) !important;
     cursor: pointer !important;
 }
 
 .sidebar-options-icons :hover {
-    color: rgba(122, 122, 122, 0.699);
+    color: rgba(92, 91, 91, 0.699);
 }

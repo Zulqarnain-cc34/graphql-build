@@ -1,7 +1,7 @@
 import React from "react";
-import { Navbar } from "../Component/HomePageComponents/Navbar";
-import { ContactForm } from "../Component/ContactPageComponents/ContactForm";
-import "../Css/contact.css";
+import { Navbar } from "../Component/Home/Navbar";
+import { ContactForm } from "../Component/Contact/ContactForm";
+import "../../Css/pages/contact.css";
 interface ContactProps { }
 
 export const Contact: React.FC<ContactProps> = () => {

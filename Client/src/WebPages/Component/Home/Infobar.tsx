@@ -1,5 +1,5 @@
 import React from "react";
-import "../Css/infobar.css";
+import "../../../Css/Components/Home/infobar.css";
 interface InfobarProps { }
 
 export const Infobar: React.FC<InfobarProps> = () => {

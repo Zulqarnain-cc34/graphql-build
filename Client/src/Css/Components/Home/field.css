@@ -20,8 +20,12 @@
 
 .field-info>h2 {
     font-size: 14px;
-    font-weight: 430;
-    color: #424141;
+    font-weight: 450;
+    color: #cecece;
+}
+
+.field-info:hover h2 {
+    color: #ffffff;
 }
 
 .field-info:hover+.field-elements {
@@ -31,7 +35,7 @@
 }
 
 .field-info-icon {
-    color: #424141 !important;
+    color: #d8d7d7 !important;
     cursor: pointer !important;
     transition: 0.2s all ease-in !important;
     border-radius: 50%;
@@ -41,7 +45,7 @@
 }
 
 .field-info-icon:hover {
-    color: #4b4b4b !important;
+    color: #ffffff !important;
     transform: rotate(-180deg) !important;
     background-color: #292828;
 }

@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 
 import { Link } from "react-router-dom";
-import "../Css/forgotpassword.css";
+import "../../Css/pages/forgotpassword.css";
 import { useForgotpasswordMutation } from "../../generated/graphql";
 interface ChangePasswordProps { }
 

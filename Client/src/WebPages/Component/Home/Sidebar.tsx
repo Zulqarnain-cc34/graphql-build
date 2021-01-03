@@ -12,7 +12,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar } from "@material-ui/core";
 import React from "react";
-import "../Css/sidebar.css";
+import "../../../Css/Components/Home/sidebar.css";
 import { Field } from "./Field";
 interface SidebarProps { }
 

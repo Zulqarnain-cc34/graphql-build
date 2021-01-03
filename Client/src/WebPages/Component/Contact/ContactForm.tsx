@@ -1,8 +1,8 @@
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import "../Css/contactForm.css";
-interface ContactFormProps {}
+import "../../../Css/Components/Contact/contactForm.css";
+interface ContactFormProps { }
 
 export const ContactForm: React.FC<ContactFormProps> = () => {
     return (

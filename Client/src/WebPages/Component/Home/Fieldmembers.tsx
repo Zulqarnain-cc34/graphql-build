@@ -1,6 +1,6 @@
 import { Avatar } from "@material-ui/core";
 import React from "react";
-import "../Css/fieldmembers.css";
+import "../../../Css/Components/Home/fieldmembers.css";
 interface FieldmembersProps {
     username: string;
     url: string;

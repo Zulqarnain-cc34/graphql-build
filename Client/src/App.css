@@ -1,12 +1,13 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Quattrocento+Sans:ital@1&display=swap");
 * {
     margin: 0;
     padding: 0;
-    font-family: "Poppins", "sans serif";
+    font-family: "Quattrocento Sans", "Whitney", "Helvetica Neue", "Helvetica", "sans-serif";
     box-sizing: border-box;
 }
 
 body,
 input {
-    font-family: "Poppins", "sans serif";
+    font-family: "Quattrocento Sans", "Whitney", "Helvetica Neue", "Helvetica", "sans-serif";
+    /*font-size: 12px;*/
 }
