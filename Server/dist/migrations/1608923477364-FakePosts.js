@@ -315,7 +315,7 @@ Nullam porttitor lacus at turpis. Donec posuere metus vitae ipsum. Aliquam non m
     `);
         });
     }
-    down(queryRunner) {
+    down() {
         return __awaiter(this, void 0, void 0, function* () { });
     }
 }

@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
+require("dotenv-safe/config");
 const express_1 = __importDefault(require("express"));
 const apollo_server_express_1 = require("apollo-server-express");
 const typeorm_1 = require("typeorm");
@@ -20,7 +21,6 @@ const type_graphql_1 = require("type-graphql");
 const Post_1 = require("./entities/Post");
 const User_1 = require("./entities/User");
 const Rooms_1 = require("./entities/Rooms");
-const UsersID_1 = require("./entities/UsersID");
 const UserResolver_1 = require("./resolvers/UserResolver");
 const PostResolver_1 = require("./resolvers/PostResolver");
 const RoomsResolver_1 = require("./resolvers/RoomsResolver");
@@ -34,22 +34,17 @@ const cors_2 = require("./middlewares/cors");
 const redis_1 = require("./redis/redis");
 const path_1 = __importDefault(require("path"));
 const Reply_1 = require("./entities/Reply");
-const ReplyResolver_1 = require("./resolvers/ReplyResolver");
+const Members_1 = require("./entities/Members");
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     yield dotenv_1.default.config();
-    const conn = yield typeorm_1.createConnection({
-        type: process.env.DATABASE_TYPE.type === "postgres"
-            ? "postgres"
-            : "postgres",
-        host: process.env.DATABASE_HOST,
-        port: parseInt(process.env.DATABASE_PORT),
-        username: process.env.DATABASE_USER,
+    yield typeorm_1.createConnection({
+        type: process.env.DATABASE_TYPE === "postgres" ? "postgres" : "postgres",
+        url: process.env.DATABASE_URL,
         password: process.env.DATABASE_PASSWORD,
-        database: process.env.DATABASE_NAME,
         migrations: [path_1.default.join(__dirname, "./migrations/*")],
         logging: process.env.DATABASE_LOG === "true" ? true : false,
         synchronize: process.env.DATABASE_SYNC === "true" ? true : false,
-        entities: [Post_1.Post, User_1.User, Rooms_1.Rooms, UsersID_1.UsersID, Reply_1.Reply],
+        entities: [Post_1.Post, User_1.User, Rooms_1.Rooms, Members_1.Members, Reply_1.Reply],
     });
     const app = express_1.default();
     yield app.set("trust proxy", true);
@@ -64,13 +59,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const port = yield process.env.NODE_PORT;
     const apolloServer = yield new apollo_server_express_1.ApolloServer({
         schema: yield type_graphql_1.buildSchema({
-            resolvers: [
-                PostResolver_1.PostResolver,
-                UserResolver_1.UserResolver,
-                RoomsResolver_1.RoomResolver,
-                RoomsResolver_1.UsersIdresolver,
-                ReplyResolver_1.ReplyResolver,
-            ],
+            resolvers: [PostResolver_1.PostResolver, UserResolver_1.UserResolver, RoomsResolver_1.RoomResolver],
             validate: false,
         }),
         subscriptions: {

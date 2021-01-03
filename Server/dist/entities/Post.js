@@ -51,6 +51,11 @@ __decorate([
     __metadata("design:type", Number)
 ], Post.prototype, "comments", void 0);
 __decorate([
+    type_graphql_1.Field(),
+    typeorm_1.Column({ type: "int", default: 0 }),
+    __metadata("design:type", Number)
+], Post.prototype, "likes", void 0);
+__decorate([
     type_graphql_1.Field(() => String),
     typeorm_1.Column(),
     __metadata("design:type", String)

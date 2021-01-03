@@ -38,6 +38,10 @@ export class Post extends BaseEntity {
     @Column({ type: "int", default: 0 })
     comments: number;
 
+    @Field()
+    @Column({ type: "int", default: 0 })
+    likes: number;
+
     @Field(() => String)
     @Column()
     message!: string;

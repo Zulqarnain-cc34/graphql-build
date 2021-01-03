@@ -1,7 +1,7 @@
 import React from "react";
 import "../Css/infobar.css";
-interface InfobarProps {}
+interface InfobarProps { }
 
-export const Infobar: React.FC<InfobarProps> = ({}) => {
+export const Infobar: React.FC<InfobarProps> = () => {
     return <div className="infobar">infobar</div>;
 };

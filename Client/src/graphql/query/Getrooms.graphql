@@ -1,0 +1,11 @@
+query getrooms($limit: Int!, $cursor: String) {
+    getRooms(limit: $limit, cursor: $cursor) {
+        rooms {
+            ...RegularRooms
+        }
+        errors {
+            field
+            message
+        }
+    }
+}

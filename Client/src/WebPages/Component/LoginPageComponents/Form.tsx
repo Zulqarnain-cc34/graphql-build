@@ -7,10 +7,10 @@ import {
 import React, { useState } from "react";
 import "../Css/form.css";
 import { faEnvelope, faUser } from "@fortawesome/free-regular-svg-icons";
-import { useLoginMutation, useRegisterMutation } from "../generated/graphql";
-import { toErrorMap } from "../utils/toErrorMap";
-import { errorMap } from "../types";
-import { useUser } from "../context";
+import { useLoginMutation, useRegisterMutation } from "../../../generated/graphql";
+import { toErrorMap } from "../../../utils/toErrorMap";
+import { errorMap } from "../../../types";
+import { useUser } from "../../../context";
 import { Link, useHistory } from "react-router-dom";
 
 interface FormProps {
@@ -20,9 +20,7 @@ interface FormProps {
 
 export const Form: React.FC<FormProps> = ({ icons, registers }) => {
     let history = useHistory();
-    const { user, setuser } = useUser();
-    console.log(user);
-
+    const { setuser } = useUser();
     const [, register] = useRegisterMutation();
     const [, login] = useLoginMutation();
     const [username, setusername] = useState<string>("");
@@ -52,6 +50,7 @@ export const Form: React.FC<FormProps> = ({ icons, registers }) => {
             history.push("/contactform");
         } else if (response.data?.register.errors) {
             const error = toErrorMap(response.data?.register.errors);
+            console.log(error);
             seterrors(error);
         }
     };

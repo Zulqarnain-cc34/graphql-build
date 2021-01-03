@@ -304,5 +304,5 @@ Nullam porttitor lacus at turpis. Donec posuere metus vitae ipsum. Aliquam non m
     `);
     }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {}
+    public async down(): Promise<void> {}
 }

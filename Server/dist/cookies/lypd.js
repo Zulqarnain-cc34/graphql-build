@@ -9,7 +9,7 @@ const constants_1 = require("../constants");
 const redis_1 = require("../redis/redis");
 exports.lypdCookie = express_session_1.default({
     name: constants_1.COOKIE_NAME,
-    secret: "sdafosfoasjkflsdjfafa90eolsd",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {

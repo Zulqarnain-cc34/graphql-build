@@ -14,14 +14,13 @@ import { Avatar } from "@material-ui/core";
 import React from "react";
 import "../Css/sidebar.css";
 import { Field } from "./Field";
-interface SidebarProps {}
+interface SidebarProps { }
 
 export const Sidebar: React.FC<SidebarProps> = () => {
     return (
         <div className="sidebar">
             <div className="sidebar-options">
                 <div className="sidebar-options-top">
-                    {" "}
                     <FontAwesomeIcon
                         icon={faStream}
                         className="sidebar-options-icons"
@@ -76,9 +75,8 @@ export const Sidebar: React.FC<SidebarProps> = () => {
 
                 <div className="sidebar-groups-bottom">
                     <hr className="sidebar-groups-hr" />
-                    <Field fieldname="Direct Messages" />
-                    <Field fieldname="Groups" />
-                    <Field fieldname="Rooms" />
+                    <Field fieldname="Direct Messages" type="Rooms" />
+                    <Field fieldname="Groups" type="Friends" />
                 </div>
             </div>
         </div>

@@ -2,18 +2,18 @@ import { ObjectType, Field } from "type-graphql";
 
 @ObjectType()
 export class FieldError {
-    @Field(() => String, { nullable: true })
+    @Field()
     field: String;
 
-    @Field(() => String, { nullable: true })
+    @Field()
     message: String;
 }
 
 @ObjectType()
 export class Success {
-    @Field(() => String, { nullable: true })
+    @Field()
     field: String;
 
-    @Field(() => String, { nullable: true })
+    @Field()
     message: String;
 }

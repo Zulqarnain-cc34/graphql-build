@@ -1,8 +1,8 @@
 import React from "react";
-import { Navbar } from "./Navbar";
-import { ContactForm } from "./ContactForm";
+import { Navbar } from "../Component/HomePageComponents/Navbar";
+import { ContactForm } from "../Component/ContactPageComponents/ContactForm";
 import "../Css/contact.css";
-interface ContactProps {}
+interface ContactProps { }
 
 export const Contact: React.FC<ContactProps> = () => {
     return (

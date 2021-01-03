@@ -7,8 +7,10 @@ import {
     UpdateDateColumn,
     BaseEntity,
     Column,
+    OneToMany,
     //ManyToMany,
 } from "typeorm";
+import { Members } from "./Members";
 //import { UsersID } from "./UsersID";
 
 @ObjectType()
@@ -33,6 +35,13 @@ export class Rooms extends BaseEntity {
     @Field(() => ID)
     @Column({ type: "int" })
     adminId!: number;
+
+    @OneToMany(() => Members, (member) => member.room)
+    rooms: Members[];
+
+    @Field()
+    @Column({ type: "int", default: 1 })
+    members: number;
 
     //@Field(() => UsersID)
     //@ManyToMany(() => UsersID, (usersId) => usersId.room)

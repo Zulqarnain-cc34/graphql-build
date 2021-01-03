@@ -7,11 +7,11 @@ import { faCog } from "@fortawesome/free-solid-svg-icons";
 import { faComments } from "@fortawesome/free-solid-svg-icons";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { Avatar, IconButton } from "@material-ui/core";
-import { useLogoutMutation, useMeQuery } from "../generated/graphql";
+import { useLogoutMutation, useMeQuery } from "../../../generated/graphql";
 import "../Css/navbar.css";
 import { Link } from "react-router-dom";
 
-interface NavbarProps {}
+interface NavbarProps { }
 
 export const Navbar: React.FC<NavbarProps> = () => {
     const [{ data, fetching }] = useMeQuery();
@@ -77,11 +77,11 @@ export const Navbar: React.FC<NavbarProps> = () => {
                                 Sign In
                             </Link>
                         ) : (
-                            <>
-                                <p>{data?.me.username}</p>
-                                <button onClick={() => logout()}>logout</button>
-                            </>
-                        )}
+                                <>
+                                    <p>{data?.me.username}</p>
+                                    <button onClick={() => logout()}>logout</button>
+                                </>
+                            )}
                     </div>
                 </div>
             </div>

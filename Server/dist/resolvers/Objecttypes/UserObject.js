@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserResponse = void 0;
+exports.boolResponse = exports.UserResponse = void 0;
 const User_1 = require("../../entities/User");
 const type_graphql_1 = require("type-graphql");
 const FieldError_1 = require("./matchingtypes/FieldError");
@@ -31,4 +31,22 @@ UserResponse = __decorate([
     type_graphql_1.ObjectType()
 ], UserResponse);
 exports.UserResponse = UserResponse;
+let boolResponse = class boolResponse {
+};
+__decorate([
+    type_graphql_1.Field(() => [FieldError_1.Success], { nullable: true }),
+    __metadata("design:type", Array)
+], boolResponse.prototype, "success", void 0);
+__decorate([
+    type_graphql_1.Field(() => [FieldError_1.FieldError], { nullable: true }),
+    __metadata("design:type", Array)
+], boolResponse.prototype, "errors", void 0);
+__decorate([
+    type_graphql_1.Field(() => Boolean, { nullable: true }),
+    __metadata("design:type", Boolean)
+], boolResponse.prototype, "result", void 0);
+boolResponse = __decorate([
+    type_graphql_1.ObjectType()
+], boolResponse);
+exports.boolResponse = boolResponse;
 //# sourceMappingURL=UserObject.js.map

@@ -17,37 +17,25 @@ const User_1 = require("./User");
 let Reply = class Reply extends typeorm_1.BaseEntity {
 };
 __decorate([
-    type_graphql_1.Field(() => type_graphql_1.ID),
-    typeorm_1.PrimaryGeneratedColumn({ type: "uuid" }),
-    __metadata("design:type", Object)
-], Reply.prototype, "id", void 0);
-__decorate([
     type_graphql_1.Field(),
-    typeorm_1.Column(),
-    __metadata("design:type", String)
-], Reply.prototype, "text", void 0);
-__decorate([
-    type_graphql_1.Field(() => Boolean),
     typeorm_1.Column({ default: false }),
     __metadata("design:type", Boolean)
 ], Reply.prototype, "liked", void 0);
 __decorate([
-    type_graphql_1.Field(() => type_graphql_1.ID),
+    type_graphql_1.Field(),
     typeorm_1.PrimaryColumn(),
     __metadata("design:type", Number)
 ], Reply.prototype, "userId", void 0);
 __decorate([
-    type_graphql_1.Field(() => User_1.User),
     typeorm_1.ManyToOne(() => User_1.User, (user) => user.replies),
     __metadata("design:type", User_1.User)
 ], Reply.prototype, "user", void 0);
 __decorate([
-    type_graphql_1.Field(() => type_graphql_1.ID),
+    type_graphql_1.Field(),
     typeorm_1.PrimaryColumn(),
     __metadata("design:type", Number)
 ], Reply.prototype, "postId", void 0);
 __decorate([
-    type_graphql_1.Field(() => Post_1.Post),
     typeorm_1.ManyToOne(() => Post_1.Post, (post) => post.replies),
     __metadata("design:type", Post_1.Post)
 ], Reply.prototype, "post", void 0);

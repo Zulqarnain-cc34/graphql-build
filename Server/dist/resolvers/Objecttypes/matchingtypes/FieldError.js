@@ -14,11 +14,11 @@ const type_graphql_1 = require("type-graphql");
 let FieldError = class FieldError {
 };
 __decorate([
-    type_graphql_1.Field(() => String, { nullable: true }),
+    type_graphql_1.Field(),
     __metadata("design:type", String)
 ], FieldError.prototype, "field", void 0);
 __decorate([
-    type_graphql_1.Field(() => String, { nullable: true }),
+    type_graphql_1.Field(),
     __metadata("design:type", String)
 ], FieldError.prototype, "message", void 0);
 FieldError = __decorate([
@@ -28,11 +28,11 @@ exports.FieldError = FieldError;
 let Success = class Success {
 };
 __decorate([
-    type_graphql_1.Field(() => String, { nullable: true }),
+    type_graphql_1.Field(),
     __metadata("design:type", String)
 ], Success.prototype, "field", void 0);
 __decorate([
-    type_graphql_1.Field(() => String, { nullable: true }),
+    type_graphql_1.Field(),
     __metadata("design:type", String)
 ], Success.prototype, "message", void 0);
 Success = __decorate([

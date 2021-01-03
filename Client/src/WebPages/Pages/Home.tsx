@@ -1,10 +1,10 @@
 import React from "react";
 import "../Css/home.css";
-import { Chat } from "./Chat";
-import { Infobar } from "./Infobar";
-import { Sidebar } from "./Sidebar";
+import { Chat } from "../Component/HomePageComponents/Chat";
+import { Infobar } from "../Component/HomePageComponents/Infobar";
+import { Sidebar } from "../Component/HomePageComponents/Sidebar";
 
-interface HomeProps {}
+interface HomeProps { }
 
 export const Home: React.FC<HomeProps> = () => {
     return (

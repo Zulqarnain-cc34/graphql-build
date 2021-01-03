@@ -4,14 +4,13 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
+import { Members } from "./Members";
 import { Post } from "./Post";
 import { Reply } from "./Reply";
-import { Rooms } from "./Rooms";
 
 @ObjectType()
 @Entity()
@@ -45,6 +44,8 @@ export class User extends BaseEntity {
     @OneToMany(() => Reply, (reply) => reply.post)
     replies: Reply[];
 
+    @OneToMany(() => Members, (member) => member.user)
+    users: Members[];
     //@ManyToOne(() => Post, (post) => post.readers)
     ////reader: Post;
 

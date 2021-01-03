@@ -21,47 +21,34 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RoomResolver = exports.UsersIdresolver = void 0;
+exports.RoomResolver = void 0;
 const isAuth_1 = require("./../middlewares/isAuth");
 const Rooms_1 = require("../entities/Rooms");
-const UsersID_1 = require("../entities/UsersID");
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const User_1 = require("../entities/User");
 const RoomsObject_1 = require("./Objecttypes/RoomsObject");
-let UsersIdresolver = class UsersIdresolver {
-    getUsersId() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield UsersID_1.UsersID.find({});
-        });
-    }
-};
-__decorate([
-    type_graphql_1.Query(() => [UsersID_1.UsersID]),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], UsersIdresolver.prototype, "getUsersId", null);
-UsersIdresolver = __decorate([
-    type_graphql_1.Resolver(Rooms_1.Rooms)
-], UsersIdresolver);
-exports.UsersIdresolver = UsersIdresolver;
 let RoomResolver = class RoomResolver {
     Rooms() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield Rooms_1.Rooms.find({});
         });
     }
-    getRooms({ req }) {
+    getRooms(limit, cursor, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const rooms = yield typeorm_1.getConnection()
+            const qb = yield typeorm_1.getConnection()
                 .getRepository(Rooms_1.Rooms)
                 .createQueryBuilder("r")
-                .leftJoinAndSelect("r.users", "users_id")
-                .getMany();
-            console.log(rooms);
+                .where('"adminId"=:id', { id: req.session.userId })
+                .orderBy('"createdAt"', "DESC")
+                .take(limit);
+            if (cursor) {
+                qb.andWhere('"createdAt" > :cursor ', {
+                    cursor: new Date(parseInt(cursor)),
+                });
+            }
             return {
-                rooms: rooms,
+                rooms: yield qb.getMany(),
                 success: [{ field: "Rooms", message: "Rooms successfully found" }],
             };
         });
@@ -154,54 +141,13 @@ let RoomResolver = class RoomResolver {
             };
         });
     }
-    joinRoom(name, { req }) {
+    joinRoom(roomid, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield User_1.User.findOne({ where: { id: req.session.userId } });
-            if (!user) {
-                return {
-                    errors: [
-                        {
-                            field: "User",
-                            message: "no user found,the user doesnot exist",
-                        },
-                    ],
-                };
-            }
-            const room = yield Rooms_1.Rooms.findOne({ where: { Roomname: name } });
-            if (!room) {
-                return {
-                    errors: [
-                        {
-                            field: "Rooms",
-                            message: "No room with that name exists",
-                        },
-                    ],
-                };
-            }
+            let insertedResult;
             try {
-                const userfound = yield UsersID_1.UsersID.findOne({
-                    where: { userid: req.session.userId },
-                });
-                console.log(userfound);
-                if (userfound) {
-                    return {
-                        updated: false,
-                        errors: [
-                            {
-                                field: "User",
-                                message: "User is already a member of the room",
-                            },
-                        ],
-                    };
-                }
-                else {
-                    const userid = yield UsersID_1.UsersID.create({
-                        userid: req.session.userId,
-                        roomid: room === null || room === void 0 ? void 0 : room.id,
-                    });
-                    userid.save();
-                    console.log(userid);
-                }
+                insertedResult = yield typeorm_1.getConnection().query(`
+            insert into members("userId","roomId")values($1,$2)
+        `, [req.session.userId, roomid]);
             }
             catch (error) {
                 if (error.code === "23505") {
@@ -209,8 +155,8 @@ let RoomResolver = class RoomResolver {
                         updated: false,
                         errors: [
                             {
-                                field: "Duplicate name",
-                                message: error.detail,
+                                field: "Rooms",
+                                message: "duplicate key error user already a member of the group",
                             },
                         ],
                     };
@@ -219,17 +165,29 @@ let RoomResolver = class RoomResolver {
                     return {
                         updated: false,
                         errors: [
-                            {
-                                field: "Error",
-                                message: error.detail,
-                            },
+                            { field: "insertionError", message: error.detail },
                         ],
+                    };
+                }
+            }
+            if (insertedResult[1] === 1) {
+                try {
+                    yield typeorm_1.getConnection().query(`
+                    update from rooms
+                    set members=member+1
+                    where id=$1
+                `, [roomid]);
+                }
+                catch (error) {
+                    return {
+                        updated: false,
+                        errors: [{ field: "updationError", message: error.detail }],
                     };
                 }
             }
             return {
                 updated: true,
-                success: [{ field: "Rooms", message: "person joined" }],
+                success: [{ field: "Rooms", message: "Successfully joined room" }],
             };
         });
     }
@@ -245,60 +203,48 @@ let RoomResolver = class RoomResolver {
                     ],
                 };
             }
-            const user = yield User_1.User.findOne({ where: { id: req.session.userId } });
-            if (!user) {
-                return {
-                    errors: [
-                        {
-                            field: "User",
-                            message: "User doesnot exist",
-                        },
-                    ],
-                };
+            let room;
+            try {
+                const result = yield typeorm_1.getConnection()
+                    .createQueryBuilder()
+                    .insert()
+                    .into(Rooms_1.Rooms)
+                    .values({
+                    Roomname: name,
+                    adminId: req.session.userId,
+                })
+                    .returning("*")
+                    .execute();
+                room = result.raw[0];
+                console.log(room);
             }
-            if (req.session.userId != undefined) {
-                let room;
-                try {
-                    const result = yield typeorm_1.getConnection()
-                        .createQueryBuilder()
-                        .insert()
-                        .into(Rooms_1.Rooms)
-                        .values({
-                        Roomname: name,
-                        adminId: req.session.userId,
-                    })
-                        .returning("*")
-                        .execute();
-                    const useridResult = yield typeorm_1.getConnection()
-                        .createQueryBuilder()
-                        .insert()
-                        .into(UsersID_1.UsersID)
-                        .values({
-                        userid: req.session.userId,
-                        roomid: result.raw[0].id,
-                    })
-                        .returning("*")
-                        .execute();
-                    console.log(useridResult.raw[0]);
-                    room = result.raw[0];
-                    console.log(room);
+            catch (error) {
+                if (error.code === "23505") {
+                    return {
+                        errors: [
+                            {
+                                field: "Duplicate name",
+                                message: error.detail,
+                            },
+                        ],
+                    };
                 }
-                catch (error) {
-                    if (error.code === "23505") {
-                        return {
-                            errors: [
-                                {
-                                    field: "Duplicate name",
-                                    message: error.detail,
-                                },
-                            ],
-                        };
-                    }
-                    else {
-                        return {
-                            errors: [{ field: "Error", message: error.detail }],
-                        };
-                    }
+                else {
+                    return {
+                        errors: [{ field: "Error", message: error.detail }],
+                    };
+                }
+            }
+            if (room) {
+                try {
+                    yield typeorm_1.getConnection().query(`
+            insert into members("userId","roomId")values($1,$2)
+        `, [req.session.userId, room.id]);
+                }
+                catch (err) {
+                    return {
+                        errors: [{ field: "InsertionError", message: err.detail }],
+                    };
                 }
                 return { rooms: room };
             }
@@ -306,7 +252,7 @@ let RoomResolver = class RoomResolver {
                 errors: [
                     {
                         field: "RoomCreation",
-                        message: "Room unable to create because user is not logged in",
+                        message: "Room unable to create",
                     },
                 ],
             };
@@ -322,9 +268,11 @@ __decorate([
 __decorate([
     type_graphql_1.Query(() => RoomsObject_1.RoomsResponse),
     type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    __param(0, type_graphql_1.Ctx()),
+    __param(0, type_graphql_1.Arg("limit", () => type_graphql_1.Int)),
+    __param(1, type_graphql_1.Arg("cursor", () => String, { nullable: true })),
+    __param(2, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Number, String, Object]),
     __metadata("design:returntype", Promise)
 ], RoomResolver.prototype, "getRooms", null);
 __decorate([
@@ -348,10 +296,10 @@ __decorate([
 __decorate([
     type_graphql_1.Mutation(() => RoomsObject_1.boolRoomResponse),
     type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    __param(0, type_graphql_1.Arg("name", () => String)),
+    __param(0, type_graphql_1.Arg("roomId", () => type_graphql_1.Int)),
     __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], RoomResolver.prototype, "joinRoom", null);
 __decorate([

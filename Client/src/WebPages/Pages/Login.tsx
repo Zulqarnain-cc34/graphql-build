@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form } from "./Form";
+import { Form } from "../Component/LoginPageComponents/Form";
 import "../Css/login.css";
 import {
     faGoogle,
@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import Rocket from "../img/rocket.svg";
 import Table from "../img/table.svg";
-interface LoginProps {}
+interface LoginProps { }
 
 const Login: React.FC<LoginProps> = () => {
     const [SignUp, setSignUp] = useState<boolean>(false);

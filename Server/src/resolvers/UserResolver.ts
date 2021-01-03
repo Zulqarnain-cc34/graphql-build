@@ -1,4 +1,3 @@
-import { ReplyResponse } from "./Objecttypes/ReplyObjectTypes";
 import { FORGOT_PASSWORD_PREFIX } from "./../constants";
 import { User } from "../entities/User";
 import {
@@ -17,9 +16,8 @@ import { COOKIE_NAME } from "../constants";
 import { v4 } from "uuid";
 import { sendEmail } from "../utils/sendEmail";
 import { UserResponse } from "./Objecttypes/UserObject";
-import { Reply } from "../entities/Reply";
 import { isAuth } from "../middlewares/isAuth";
-import { Post } from "../entities/Post";
+import { Reply } from "../entities/Reply";
 
 @Resolver()
 export class UserResolver {
@@ -28,28 +26,12 @@ export class UserResolver {
         return User.find({});
     }
 
-    @Query(() => User)
+    @Query(() => User, { nullable: true })
     async me(@Ctx() { req }: MyContext): Promise<User | undefined> {
         if (!req.session.userId) {
             return undefined;
         }
-        const user = await getConnection().query(`
-
-            select u.email,
-                json_build_object(
-                    'id',r.id,
-                    'Roomname',r."Roomname",
-                    'updatedAt', r."updatedAt",
-                    'createdAt', r."createdAt",
-                    'adminId', r."adminId"
-                ) room
-            from
-                public.user u
-            inner join
-                    rooms r on r."adminId" = u.id
-        `);
-        console.log(user);
-        return user;
+        return User.findOne({ where: { id: req.session.userId } });
     }
 
     @Mutation(() => UserResponse)
@@ -301,45 +283,146 @@ export class UserResolver {
         return { user };
     }
 
-    @Mutation(() => ReplyResponse)
-    @UseMiddleware(isAuth)
-    async createComment(
-        @Arg("postId", () => Int) postId: number,
-        @Arg("text", () => String) text: string,
-        @Ctx() { req }: MyContext
-    ): Promise<ReplyResponse> {
-        const { userId } = req.session;
-        let reply;
+    //@Mutation(() => boolResponse)
+    //@UseMiddleware(isAuth)
+    //async createComment(
+    //    @Arg("postId", () => Int) postId: number,
+    //    //@Arg("text", () => String) text: string,
+    //    @Ctx() { req }: MyContext
+    //): Promise<boolResponse> {
+    //    const { userId } = req.session;
+    //    let reply;
 
+    //    try {
+    //        reply = await getConnection().query(
+    //            `
+    //            insert into reply(postId,userId)values($1,$2)
+    //        `,
+    //            [postId, userId]
+    //        );
+    //        console.log(reply);
+    //    } catch (error) {
+    //        if (error.code === "23505") {
+    //            return {
+    //                result: true,
+    //                errors: [{ field: "Error", message: error.detail }],
+    //            };
+    //        }
+    //    }
+
+    //    try {
+    //        await getConnection().query(
+    //            `
+    //            update post
+    //            set comments=comments+1
+    //            where id=$1
+    //        `,
+    //            [postId]
+    //        );
+    //    } catch (error) {
+    //        if (error.code === "23505") {
+    //            return {
+    //                result: false,
+    //                errors: [{ field: "Error", message: error.detail }],
+    //            };
+    //        }
+    //    }
+
+    //    return {
+    //        result: true,
+    //        success: [
+    //            {
+    //                field: "Reply",
+    //                message: "Succesfully created reply",
+    //            },
+    //        ],
+    //    };
+    //}
+
+    @Mutation(() => Boolean)
+    @UseMiddleware(isAuth)
+    async hitlike(
+        @Arg("postid", () => Int) postId: number,
+        @Ctx() { req }: MyContext
+    ): Promise<Boolean> {
+        let inserted;
+        let updated;
         try {
-            reply = await Reply.create({ userId, postId, text }).save();
-            console.log(reply);
-        } catch (error) {
-            if (error.code === "23505") {
-                return { errors: [{ field: "Error", message: error.detail }] };
+            inserted = await getConnection().query(
+                `
+                insert into reply ("postId", "userId",liked) values ($1, $2,true)
+                `,
+                [postId, req.session.userId]
+            );
+            console.log(inserted);
+        } catch (err) {
+            if (err) {
+                console.log(err);
+                return false;
             }
         }
-
         try {
-            await getConnection().query(
+            updated = await getConnection().query(
                 `
-                update post
-                set comments=comments+1
-                where id=$1
-            `,
+            update post
+            set likes=likes+1
+            where id=$1
+        `,
                 [postId]
             );
-        } catch (error) {
-            if (error.code === "23505") {
-                return {
-                    errors: [{ field: "Error", message: error.detail }],
-                };
+            console.log(updated);
+        } catch (err) {
+            if (err) {
+                console.log(err);
+                return false;
             }
         }
+        return true;
+    }
 
-        return {
-            replies: reply,
-            success: [{ field: "Reply", message: "Succesfully created reply" }],
-        };
+    @Mutation(() => Boolean)
+    @UseMiddleware(isAuth)
+    async removelike(
+        @Arg("postid", () => Int) postId: number,
+        @Ctx() { req }: MyContext
+    ): Promise<Boolean> {
+        let deleted;
+        let updated;
+        try {
+            deleted = await getConnection().query(
+                `
+                delete from reply where "postId"=$1 and "userId"=$2
+                `,
+                [postId, req.session.userId]
+            );
+            console.log(deleted);
+        } catch (err) {
+            if (err) {
+                console.log(err);
+                return false;
+            }
+        }
+        try {
+            updated = await getConnection().query(
+                `
+            update post
+            set likes=likes-1
+            where id=$1
+        `,
+                [postId]
+            );
+            console.log(updated);
+        } catch (err) {
+            if (err) {
+                console.log(err);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Query(() => [Reply])
+    async replies(): Promise<Reply[]> {
+        return await Reply.find({});
     }
 }
