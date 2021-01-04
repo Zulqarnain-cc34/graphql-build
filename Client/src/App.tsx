@@ -1,13 +1,13 @@
 import React from "react";
 
 import "./App.css";
-import Login from "./WebPages/Pages/Login";
+import Login from "./pages/Pages/Login";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import Home from "./WebPages/Pages/Home";
-import { Contact } from "./WebPages/Pages/Contact";
-import { ForgotPassword } from "./WebPages/Pages/forgotpassword";
-import { ChangePassword } from "./WebPages/Pages/ChangePassword";
-interface AppProps { }
+import Home from "./pages/Pages/Home";
+import { Contact } from "./pages/Pages/Contact";
+import { ForgotPassword } from "./pages/Pages/forgotpassword";
+import { ChangePassword } from "./pages/Pages/ChangePassword";
+interface AppProps {}
 
 export const App: React.FC<AppProps> = () => {
     return (
