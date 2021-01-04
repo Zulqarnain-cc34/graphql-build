@@ -20,13 +20,15 @@ export class Members extends BaseEntity {
     @PrimaryColumn()
     userId: number;
 
-    @ManyToOne(() => User, (user) => user.users)
-    user: User;
+    @Field(() => User, { nullable: true })
+    @ManyToOne(() => User, (user) => user.memberin)
+    users: User;
 
     @Field()
     @PrimaryColumn()
     roomId: number;
 
+    @Field(() => Rooms, { nullable: true })
     @ManyToOne(() => Rooms, (room) => room.rooms)
     room: Rooms;
 }

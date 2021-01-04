@@ -12,11 +12,10 @@ import {
 import { MyContext } from "../types";
 import { getConnection } from "typeorm";
 import { User } from "../entities/User";
-import {
-    RoomResponse,
-    RoomsResponse,
-    boolRoomResponse,
-} from "./Objecttypes/RoomsObject";
+import { RoomResponse } from "./Objecttypes/RoomsObject";
+import { MembersResponse } from "./Objecttypes/MembersObject";
+import { boolResponse } from "./Objecttypes/matchingtypes/UpdatedResponse";
+import { error } from "console";
 
 @Resolver(Rooms)
 export class RoomResolver {
@@ -25,40 +24,118 @@ export class RoomResolver {
         return await Rooms.find({});
     }
 
-    @Query(() => RoomsResponse)
+    @Query(() => MembersResponse)
     @UseMiddleware(isAuth)
-    async getRooms(
+    async getRoom(
         @Arg("limit", () => Int) limit: number,
-        @Arg("cursor", () => String, { nullable: true }) cursor: string,
         @Ctx() { req }: MyContext
-    ): Promise<RoomsResponse> {
-        const qb = await getConnection()
-            .getRepository(Rooms)
-            .createQueryBuilder("r")
-            .where('"adminId"=:id', { id: req.session.userId })
-            .orderBy('"createdAt"', "DESC")
-            .take(limit);
+    ): Promise<MembersResponse> {
+        let rooms;
 
-        if (cursor) {
-            qb.andWhere('"createdAt" > :cursor ', {
-                cursor: new Date(parseInt(cursor)),
-            });
+        const reallimit = Math.min(limit, 25);
+
+        try {
+            rooms = await getConnection().query(
+                `select m."userId",m."roomId",m.joined,
+                json_build_object(
+                    'id', u.id,
+                    'createdAt', u."createdAt",
+                    'updatedAt', u."updatedAt",
+                    'username', u.username,
+                    'email', u.email
+                    )  users
+                ,json_build_object(
+                    'id', r.id,
+                    'createdAt', r."createdAt",
+                    'updatedAt', r."updatedAt",
+                    'adminId',   r."adminId",
+                    'Roomname',   r."Roomname",
+                    'members',    r.members
+                    )   room
+                    from members m
+                    inner join
+                            public.user u on m."userId"=u.id
+                    inner join
+                            rooms r on m."roomId"=r.id
+                    where m."userId"=$1 `,
+                [req.session.userId]
+            );
+            console.log(rooms);
+        } catch (error) {
+            if (error.code === "23505") {
+                return {
+                    errors: [
+                        { field: "DuplicateError", message: error.detail },
+                    ],
+                };
+            } else {
+                return {
+                    errors: [{ field: "Error", message: error.detail }],
+                };
+            }
         }
-
+        //if (cursor) {
+        //    qb.andWhere('"createdAt" > :cursor ', {
+        //        cursor: new Date(parseInt(cursor)),
+        //    });
+        //}
         return {
-            rooms: await qb.getMany(),
+            rooms: rooms,
             success: [{ field: "Rooms", message: "Rooms successfully found" }],
         };
     }
 
-    @Mutation(() => boolRoomResponse)
+    @Mutation(() => boolResponse)
+    @UseMiddleware(isAuth)
+    async leaveRoom(
+        @Arg("roomId", () => Int) roomId: number,
+        @Ctx() { req }: MyContext
+    ): Promise<boolResponse> {
+        if (!roomId) {
+            return {
+                updated: false,
+                errors: [{ field: "Args", message: "roomId is required" }],
+            };
+        }
+        try {
+            const deleted = await getConnection().query(
+                `
+                delete from members where "userId" = $1 and "roomId" = $2
+                `,
+                [req.session.userId, roomId]
+            );
+            console.log(deleted);
+        } catch (err) {
+            if (err) {
+                console.log(err);
+                return {
+                    updated: false,
+                    errors: [
+                        {
+                            field: "DeletionError",
+                            message: `Unable to delete ${err.detail}`,
+                        },
+                    ],
+                };
+            }
+        }
+
+        return {
+            updated: true,
+            success: [
+                { field: "Rooms", message: "Rooms successfully removed" },
+            ],
+        };
+    }
+
+    @Mutation(() => boolResponse)
     @UseMiddleware(isAuth)
     async updateRoom(
         @Arg("prevname", () => String) prevname: string,
         @Arg("newname", () => String) newname: string,
 
         @Ctx() { req }: MyContext
-    ): Promise<boolRoomResponse> {
+    ): Promise<boolResponse> {
         const user = await User.findOne({ where: { id: req.session.userId } });
 
         if (newname.length > 100) {
@@ -130,11 +207,11 @@ export class RoomResolver {
             ],
         };
     }
-    @Mutation(() => boolRoomResponse)
+    @Mutation(() => boolResponse)
     async deleteRoom(
         @Arg("name", () => String) name: string,
         @Ctx() { req }: MyContext
-    ): Promise<boolRoomResponse> {
+    ): Promise<boolResponse> {
         const deleteResult = await Rooms.delete({
             adminId: req.session.userId,
             Roomname: name,
@@ -153,15 +230,14 @@ export class RoomResolver {
             errors: [{ field: "Rooms", message: "Room deletion unsuccessful" }],
         };
     }
-    @Mutation(() => boolRoomResponse)
+    @Mutation(() => boolResponse)
     @UseMiddleware(isAuth)
     async joinRoom(
         @Arg("roomId", () => Int) roomid: number,
         @Ctx() { req }: MyContext
-    ): Promise<boolRoomResponse> {
-        let insertedResult;
+    ): Promise<boolResponse> {
         try {
-            insertedResult = await getConnection().query(
+            await getConnection().query(
                 `
             insert into members("userId","roomId")values($1,$2)
         `,
@@ -189,23 +265,22 @@ export class RoomResolver {
             }
         }
 
-        if (insertedResult[1] === 1) {
-            try {
-                await getConnection().query(
-                    `
-                    update from rooms
-                    set members=member+1
+        try {
+            await getConnection().query(
+                `
+                    update rooms
+                    set members=members+1
                     where id=$1
                 `,
-                    [roomid]
-                );
-            } catch (error) {
-                return {
-                    updated: false,
-                    errors: [{ field: "updationError", message: error.detail }],
-                };
-            }
+                [roomid]
+            );
+        } catch (error) {
+            return {
+                updated: false,
+                errors: [{ field: "updationError", message: error.detail }],
+            };
         }
+
         return {
             updated: true,
             success: [{ field: "Rooms", message: "Successfully joined room" }],

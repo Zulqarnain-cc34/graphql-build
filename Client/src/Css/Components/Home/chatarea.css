@@ -5,4 +5,18 @@
     background: url("https://discord.com/assets/b5eb2f7d6b3f8cc9b60be4a5dcf28015.svg");
     background-repeat: no-repeat;
     background-position: 45% 58%;
+    justify-content: center;
+    padding: 10px;
+}
+
+.chattingarea {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    border-radius: 4px;
+    width: 100%;
+    background-color: transparent;
+    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: hidden;
 }

@@ -19,11 +19,11 @@ export class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Field(() => Date)
+    @Field(() => String)
     @CreateDateColumn()
     createdAt: Date;
 
-    @Field(() => Date)
+    @Field(() => String)
     @UpdateDateColumn()
     updatedAt: Date;
 
@@ -41,11 +41,11 @@ export class User extends BaseEntity {
     @OneToMany(() => Post, (post) => post.creator)
     posts: Post[];
 
-    @OneToMany(() => Reply, (reply) => reply.post)
+    @OneToMany(() => Reply, (reply) => reply.users)
     replies: Reply[];
 
-    @OneToMany(() => Members, (member) => member.user)
-    users: Members[];
+    @OneToMany(() => Members, (member) => member.users)
+    memberin: Members[];
     //@ManyToOne(() => Post, (post) => post.readers)
     ////reader: Post;
 

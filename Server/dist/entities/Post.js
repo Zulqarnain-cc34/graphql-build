@@ -42,7 +42,7 @@ __decorate([
     __metadata("design:type", User_1.User)
 ], Post.prototype, "creator", void 0);
 __decorate([
-    typeorm_1.OneToMany(() => Reply_1.Reply, (reply) => reply.post),
+    typeorm_1.OneToMany(() => Reply_1.Reply, (reply) => reply.posts),
     __metadata("design:type", Array)
 ], Post.prototype, "replies", void 0);
 __decorate([

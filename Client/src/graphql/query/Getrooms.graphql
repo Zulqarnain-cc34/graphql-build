@@ -1,11 +1,15 @@
-query getrooms($limit: Int!, $cursor: String) {
-    getRooms(limit: $limit, cursor: $cursor) {
+query getrooms($limit: Int!) {
+    getRoom(limit: $limit) {
         rooms {
-            ...RegularRooms
+            room {
+                ...RegularRooms
+            }
         }
         errors {
-            field
-            message
+            ...RegularError
+        }
+        success {
+            ...RegularSuccess
         }
     }
 }

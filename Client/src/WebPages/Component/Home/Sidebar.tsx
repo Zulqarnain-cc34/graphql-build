@@ -2,8 +2,10 @@ import {
     faBell,
     faBullhorn,
     faChalkboardTeacher,
+    faCog,
     faComment,
     faCouch,
+    faHeadphonesAlt,
     faHockeyPuck,
     faSearch,
     faStream,
@@ -12,11 +14,17 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar } from "@material-ui/core";
 import React from "react";
+import { useUser } from "../../../context";
 import "../../../Css/Components/Home/sidebar.css";
 import { Field } from "./Field";
-interface SidebarProps { }
+import Slack from "../../../img/slack.svg";
+import Mic from "../../../img/mute-microphone.svg";
+
+interface SidebarProps {}
 
 export const Sidebar: React.FC<SidebarProps> = () => {
+    const { user } = useUser();
+    console.log(user);
     return (
         <div className="sidebar">
             <div className="sidebar-options">
@@ -77,6 +85,38 @@ export const Sidebar: React.FC<SidebarProps> = () => {
                     <hr className="sidebar-groups-hr" />
                     <Field fieldname="Direct Messages" type="Rooms" />
                     <Field fieldname="Groups" type="Friends" />
+                </div>
+                <div className="sidebar-groups-user">
+                    <img
+                        src={Slack}
+                        alt=""
+                        className="sidebar-groups-user-slack"
+                    />
+                    <div className="sidebar-groups-user-content">
+                        <h2>{user?.username}</h2>
+                        <p>#3985</p>
+                    </div>
+                    <div className="sidebar-groups-user-icons">
+                        <div className="sidebar-groups-user-icondiv">
+                            <img
+                                src={Mic}
+                                alt=""
+                                className="sidebar-groups-user-icon"
+                            />
+                        </div>
+                        <div className="sidebar-groups-user-icondiv">
+                            <FontAwesomeIcon
+                                icon={faHeadphonesAlt}
+                                className="sidebar-groups-user-icon"
+                            />
+                        </div>
+                        <div className="sidebar-groups-user-icondiv">
+                            <FontAwesomeIcon
+                                icon={faCog}
+                                className="sidebar-groups-user-icon"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

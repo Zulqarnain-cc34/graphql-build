@@ -4,5 +4,10 @@ import "../../../Css/Components/Home/chatarea.css";
 interface ChatareaProps { }
 
 export const Chatarea: React.FC<ChatareaProps> = () => {
-    return <div className="chatarea">chatarea</div>;
+    //const [{data}]=usePosts();
+    return <div className="chatarea">
+        <div className="chattingarea">
+
+        </div>
+    </div>;
 };

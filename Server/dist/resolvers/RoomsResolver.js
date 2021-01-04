@@ -28,28 +28,96 @@ const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const User_1 = require("../entities/User");
 const RoomsObject_1 = require("./Objecttypes/RoomsObject");
+const MembersObject_1 = require("./Objecttypes/MembersObject");
+const UpdatedResponse_1 = require("./Objecttypes/matchingtypes/UpdatedResponse");
 let RoomResolver = class RoomResolver {
     Rooms() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield Rooms_1.Rooms.find({});
         });
     }
-    getRooms(limit, cursor, { req }) {
+    getRoom(limit, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const qb = yield typeorm_1.getConnection()
-                .getRepository(Rooms_1.Rooms)
-                .createQueryBuilder("r")
-                .where('"adminId"=:id', { id: req.session.userId })
-                .orderBy('"createdAt"', "DESC")
-                .take(limit);
-            if (cursor) {
-                qb.andWhere('"createdAt" > :cursor ', {
-                    cursor: new Date(parseInt(cursor)),
-                });
+            let rooms;
+            const reallimit = Math.min(limit, 25);
+            try {
+                rooms = yield typeorm_1.getConnection().query(`select m."userId",m."roomId",m.joined,
+                json_build_object(
+                    'id', u.id,
+                    'createdAt', u."createdAt",
+                    'updatedAt', u."updatedAt",
+                    'username', u.username,
+                    'email', u.email
+                    )  users
+                ,json_build_object(
+                    'id', r.id,
+                    'createdAt', r."createdAt",
+                    'updatedAt', r."updatedAt",
+                    'adminId',   r."adminId",
+                    'Roomname',   r."Roomname",
+                    'members',    r.members
+                    )   room
+                    from members m
+                    inner join
+                            public.user u on m."userId"=u.id
+                    inner join
+                            rooms r on m."roomId"=r.id
+                    where m."userId"=$1 `, [req.session.userId]);
+                console.log(rooms);
+            }
+            catch (error) {
+                if (error.code === "23505") {
+                    return {
+                        errors: [
+                            { field: "DuplicateError", message: error.detail },
+                        ],
+                    };
+                }
+                else {
+                    return {
+                        errors: [{ field: "Error", message: error.detail }],
+                    };
+                }
             }
             return {
-                rooms: yield qb.getMany(),
+                rooms: rooms,
                 success: [{ field: "Rooms", message: "Rooms successfully found" }],
+            };
+        });
+    }
+    leaveRoom(roomId, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!roomId) {
+                return {
+                    updated: false,
+                    errors: [{ field: "Args", message: "roomId is required" }],
+                };
+            }
+            try {
+                const deleted = yield typeorm_1.getConnection().query(`
+                delete from members where "userId" = $1 and "roomId" = $2
+                `, [req.session.userId, roomId]);
+                console.log(deleted);
+            }
+            catch (err) {
+                if (err) {
+                    console.log(err);
+                    return {
+                        updated: false,
+                        errors: [
+                            {
+                                field: "DeletionError",
+                                message: `Unable to delete ${err.detail}`,
+                            },
+                        ],
+                    };
+                }
+            }
+            return {
+                updated: true,
+                success: [
+                    { field: "Rooms", message: "Rooms successfully removed" },
+                ],
             };
         });
     }
@@ -143,9 +211,8 @@ let RoomResolver = class RoomResolver {
     }
     joinRoom(roomid, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
-            let insertedResult;
             try {
-                insertedResult = yield typeorm_1.getConnection().query(`
+                yield typeorm_1.getConnection().query(`
             insert into members("userId","roomId")values($1,$2)
         `, [req.session.userId, roomid]);
             }
@@ -170,20 +237,18 @@ let RoomResolver = class RoomResolver {
                     };
                 }
             }
-            if (insertedResult[1] === 1) {
-                try {
-                    yield typeorm_1.getConnection().query(`
-                    update from rooms
-                    set members=member+1
+            try {
+                yield typeorm_1.getConnection().query(`
+                    update rooms
+                    set members=members+1
                     where id=$1
                 `, [roomid]);
-                }
-                catch (error) {
-                    return {
-                        updated: false,
-                        errors: [{ field: "updationError", message: error.detail }],
-                    };
-                }
+            }
+            catch (error) {
+                return {
+                    updated: false,
+                    errors: [{ field: "updationError", message: error.detail }],
+                };
             }
             return {
                 updated: true,
@@ -266,17 +331,25 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RoomResolver.prototype, "Rooms", null);
 __decorate([
-    type_graphql_1.Query(() => RoomsObject_1.RoomsResponse),
+    type_graphql_1.Query(() => MembersObject_1.MembersResponse),
     type_graphql_1.UseMiddleware(isAuth_1.isAuth),
     __param(0, type_graphql_1.Arg("limit", () => type_graphql_1.Int)),
-    __param(1, type_graphql_1.Arg("cursor", () => String, { nullable: true })),
-    __param(2, type_graphql_1.Ctx()),
+    __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String, Object]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
-], RoomResolver.prototype, "getRooms", null);
+], RoomResolver.prototype, "getRoom", null);
 __decorate([
-    type_graphql_1.Mutation(() => RoomsObject_1.boolRoomResponse),
+    type_graphql_1.Mutation(() => UpdatedResponse_1.boolResponse),
+    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
+    __param(0, type_graphql_1.Arg("roomId", () => type_graphql_1.Int)),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], RoomResolver.prototype, "leaveRoom", null);
+__decorate([
+    type_graphql_1.Mutation(() => UpdatedResponse_1.boolResponse),
     type_graphql_1.UseMiddleware(isAuth_1.isAuth),
     __param(0, type_graphql_1.Arg("prevname", () => String)),
     __param(1, type_graphql_1.Arg("newname", () => String)),
@@ -286,7 +359,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RoomResolver.prototype, "updateRoom", null);
 __decorate([
-    type_graphql_1.Mutation(() => RoomsObject_1.boolRoomResponse),
+    type_graphql_1.Mutation(() => UpdatedResponse_1.boolResponse),
     __param(0, type_graphql_1.Arg("name", () => String)),
     __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
@@ -294,7 +367,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RoomResolver.prototype, "deleteRoom", null);
 __decorate([
-    type_graphql_1.Mutation(() => RoomsObject_1.boolRoomResponse),
+    type_graphql_1.Mutation(() => UpdatedResponse_1.boolResponse),
     type_graphql_1.UseMiddleware(isAuth_1.isAuth),
     __param(0, type_graphql_1.Arg("roomId", () => type_graphql_1.Int)),
     __param(1, type_graphql_1.Ctx()),

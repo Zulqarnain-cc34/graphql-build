@@ -9,44 +9,44 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RoomResponse = exports.RoomsResponse = void 0;
-const Rooms_1 = require("../../entities/Rooms");
+exports.MembersResponse = exports.MemberResponse = void 0;
 const type_graphql_1 = require("type-graphql");
 const FieldError_1 = require("./matchingtypes/FieldError");
-let RoomsResponse = class RoomsResponse {
+const Members_1 = require("../../entities/Members");
+let MemberResponse = class MemberResponse {
 };
 __decorate([
     type_graphql_1.Field(() => [FieldError_1.Success], { nullable: true }),
     __metadata("design:type", Array)
-], RoomsResponse.prototype, "success", void 0);
-__decorate([
-    type_graphql_1.Field(() => [Rooms_1.Rooms], { nullable: true }),
-    __metadata("design:type", Array)
-], RoomsResponse.prototype, "rooms", void 0);
+], MemberResponse.prototype, "success", void 0);
 __decorate([
     type_graphql_1.Field(() => [FieldError_1.FieldError], { nullable: true }),
     __metadata("design:type", Array)
-], RoomsResponse.prototype, "errors", void 0);
-RoomsResponse = __decorate([
+], MemberResponse.prototype, "errors", void 0);
+__decorate([
+    type_graphql_1.Field(() => Members_1.Members, { nullable: true }),
+    __metadata("design:type", Members_1.Members)
+], MemberResponse.prototype, "rooms", void 0);
+MemberResponse = __decorate([
     type_graphql_1.ObjectType()
-], RoomsResponse);
-exports.RoomsResponse = RoomsResponse;
-let RoomResponse = class RoomResponse {
+], MemberResponse);
+exports.MemberResponse = MemberResponse;
+let MembersResponse = class MembersResponse {
 };
 __decorate([
     type_graphql_1.Field(() => [FieldError_1.Success], { nullable: true }),
     __metadata("design:type", Array)
-], RoomResponse.prototype, "success", void 0);
-__decorate([
-    type_graphql_1.Field(() => Rooms_1.Rooms, { nullable: true }),
-    __metadata("design:type", Rooms_1.Rooms)
-], RoomResponse.prototype, "rooms", void 0);
+], MembersResponse.prototype, "success", void 0);
 __decorate([
     type_graphql_1.Field(() => [FieldError_1.FieldError], { nullable: true }),
     __metadata("design:type", Array)
-], RoomResponse.prototype, "errors", void 0);
-RoomResponse = __decorate([
+], MembersResponse.prototype, "errors", void 0);
+__decorate([
+    type_graphql_1.Field(() => [Members_1.Members], { nullable: true }),
+    __metadata("design:type", Array)
+], MembersResponse.prototype, "rooms", void 0);
+MembersResponse = __decorate([
     type_graphql_1.ObjectType()
-], RoomResponse);
-exports.RoomResponse = RoomResponse;
-//# sourceMappingURL=RoomsObject.js.map
+], MembersResponse);
+exports.MembersResponse = MembersResponse;
+//# sourceMappingURL=MembersObject.js.map

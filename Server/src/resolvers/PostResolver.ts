@@ -22,7 +22,8 @@ export class PostResolver {
     @Query(() => [Post])
     async posts(
         @Arg("limit", () => Int) limit: number,
-        @Arg("cursor", () => String, { nullable: true }) cursor: string | null
+        @Arg("cursor", () => String, { nullable: true }) cursor: string | null,
+        @Ctx() { req }: MyContext
     ): Promise<Post[]> {
         const reallimit = Math.min(50, limit);
 
@@ -32,7 +33,7 @@ export class PostResolver {
         if (cursor) {
             replacements.push(new Date(parseInt(cursor)));
         }
-
+        replacements.push(req.session.userId);
         const posts = await getConnection().query(
             `
             select p.*,
@@ -45,7 +46,7 @@ export class PostResolver {
                 ) creator
             from post p
             inner join public.user u on u.id=p.creatorid
-            ${cursor ? `where p."createdAt"< $2` : ""}
+            ${cursor ? `where p."createdAt"> $2` : ""}
             order by "createdAt" DESC
             limit $1
         `,

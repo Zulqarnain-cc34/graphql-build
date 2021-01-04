@@ -17,12 +17,12 @@ export type Scalars = {
 export type Query = {
   __typename?: 'Query';
   Users: Array<User>;
-  me: User;
+  me?: Maybe<User>;
   replies: Array<Reply>;
   post?: Maybe<Post>;
   posts: Array<Post>;
   Rooms: Array<Rooms>;
-  getRooms: RoomsResponse;
+  getRoom: MembersResponse;
 };
 
 
@@ -37,24 +37,21 @@ export type QueryPostsArgs = {
 };
 
 
-export type QueryGetRoomsArgs = {
-  cursor?: Maybe<Scalars['String']>;
+export type QueryGetRoomArgs = {
   limit: Scalars['Int'];
 };
 
 export type User = {
   __typename?: 'User';
   id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
   username: Scalars['String'];
   email: Scalars['String'];
 };
 
-
 export type Reply = {
   __typename?: 'Reply';
-  liked: Scalars['Boolean'];
   userId: Scalars['Float'];
   postId: Scalars['Float'];
 };
@@ -81,24 +78,34 @@ export type Rooms = {
   members: Scalars['Float'];
 };
 
-export type RoomsResponse = {
-  __typename?: 'RoomsResponse';
+export type MembersResponse = {
+  __typename?: 'MembersResponse';
   success?: Maybe<Array<Success>>;
-  rooms?: Maybe<Array<Rooms>>;
   errors?: Maybe<Array<FieldError>>;
+  rooms?: Maybe<Array<Members>>;
 };
 
 export type Success = {
   __typename?: 'Success';
-  field?: Maybe<Scalars['String']>;
-  message?: Maybe<Scalars['String']>;
+  field: Scalars['String'];
+  message: Scalars['String'];
 };
 
 export type FieldError = {
   __typename?: 'FieldError';
-  field?: Maybe<Scalars['String']>;
-  message?: Maybe<Scalars['String']>;
+  field: Scalars['String'];
+  message: Scalars['String'];
 };
+
+export type Members = {
+  __typename?: 'Members';
+  joined: Scalars['DateTime'];
+  userId: Scalars['Float'];
+  users?: Maybe<User>;
+  roomId: Scalars['Float'];
+  room?: Maybe<Rooms>;
+};
+
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -112,9 +119,10 @@ export type Mutation = {
   createpost: Post;
   updatepost: Post;
   deletepost: Scalars['Boolean'];
-  updateRoom: BoolRoomResponse;
-  deleteRoom: BoolRoomResponse;
-  joinRoom: BoolRoomResponse;
+  leaveRoom: BoolResponse;
+  updateRoom: BoolResponse;
+  deleteRoom: BoolResponse;
+  joinRoom: BoolResponse;
   createRoom: RoomResponse;
 };
 
@@ -169,6 +177,11 @@ export type MutationDeletepostArgs = {
 };
 
 
+export type MutationLeaveRoomArgs = {
+  roomId: Scalars['Int'];
+};
+
+
 export type MutationUpdateRoomArgs = {
   newname: Scalars['String'];
   prevname: Scalars['String'];
@@ -196,8 +209,8 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
-export type BoolRoomResponse = {
-  __typename?: 'boolRoomResponse';
+export type BoolResponse = {
+  __typename?: 'boolResponse';
   success?: Maybe<Array<Success>>;
   updated?: Maybe<Scalars['Boolean']>;
   errors?: Maybe<Array<FieldError>>;
@@ -290,8 +303,8 @@ export type JoinroomMutationVariables = Exact<{
 export type JoinroomMutation = (
   { __typename?: 'Mutation' }
   & { joinRoom: (
-    { __typename?: 'boolRoomResponse' }
-    & Pick<BoolRoomResponse, 'updated'>
+    { __typename?: 'boolResponse' }
+    & Pick<BoolResponse, 'updated'>
     & { errors?: Maybe<Array<(
       { __typename?: 'FieldError' }
       & Pick<FieldError, 'field' | 'message'>
@@ -350,20 +363,25 @@ export type RegisterMutation = (
 
 export type GetroomsQueryVariables = Exact<{
   limit: Scalars['Int'];
-  cursor?: Maybe<Scalars['String']>;
 }>;
 
 
 export type GetroomsQuery = (
   { __typename?: 'Query' }
-  & { getRooms: (
-    { __typename?: 'RoomsResponse' }
+  & { getRoom: (
+    { __typename?: 'MembersResponse' }
     & { rooms?: Maybe<Array<(
-      { __typename?: 'Rooms' }
-      & RegularRoomsFragment
+      { __typename?: 'Members' }
+      & { room?: Maybe<(
+        { __typename?: 'Rooms' }
+        & RegularRoomsFragment
+      )> }
     )>>, errors?: Maybe<Array<(
       { __typename?: 'FieldError' }
-      & Pick<FieldError, 'field' | 'message'>
+      & RegularErrorFragment
+    )>>, success?: Maybe<Array<(
+      { __typename?: 'Success' }
+      & RegularSuccessFragment
     )>> }
   ) }
 );
@@ -373,10 +391,10 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type MeQuery = (
   { __typename?: 'Query' }
-  & { me: (
+  & { me?: Maybe<(
     { __typename?: 'User' }
     & RegularUserFragment
-  ) }
+  )> }
 );
 
 export const RegularErrorFragmentDoc = gql`
@@ -511,18 +529,24 @@ export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
 };
 export const GetroomsDocument = gql`
-    query getrooms($limit: Int!, $cursor: String) {
-  getRooms(limit: $limit, cursor: $cursor) {
+    query getrooms($limit: Int!) {
+  getRoom(limit: $limit) {
     rooms {
-      ...RegularRooms
+      room {
+        ...RegularRooms
+      }
     }
     errors {
-      field
-      message
+      ...RegularError
+    }
+    success {
+      ...RegularSuccess
     }
   }
 }
-    ${RegularRoomsFragmentDoc}`;
+    ${RegularRoomsFragmentDoc}
+${RegularErrorFragmentDoc}
+${RegularSuccessFragmentDoc}`;
 
 export function useGetroomsQuery(options: Omit<Urql.UseQueryArgs<GetroomsQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<GetroomsQuery>({ query: GetroomsDocument, ...options });

@@ -11,9 +11,11 @@ interface FieldProps {
 }
 
 export const Field: React.FC<FieldProps> = ({ fieldname, type }) => {
-    const [rooms] = useGetroomsQuery({ variables: { limit: 4 } });
+    //const [rooms] = useGetroomsQuery({ variables: { limit: 4 } });
+    const [{ data }] = useGetroomsQuery({ variables: { limit: 10 } });
+    console.log(data);
     //const { user } = useUser();
-    console.log(rooms.data);
+    //console.log(rooms.data);
     return (
         <div className="field">
             <div className="field-info">
@@ -25,10 +27,10 @@ export const Field: React.FC<FieldProps> = ({ fieldname, type }) => {
             </div>
             <div className="field-elements">
                 {type.toLowerCase() === "rooms"
-                    ? rooms?.data?.getRooms.rooms.map((room) => (
+                    ? data?.getRoom.rooms.map((room) => (
                         <Fieldmembers
-                            username={room?.Roomname}
-                            url={room?.adminId}
+                            username={room?.room.Roomname}
+                            url={room?.room.adminId}
                         />
                     ))
                     : null}

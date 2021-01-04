@@ -18,18 +18,13 @@ let Reply = class Reply extends typeorm_1.BaseEntity {
 };
 __decorate([
     type_graphql_1.Field(),
-    typeorm_1.Column({ default: false }),
-    __metadata("design:type", Boolean)
-], Reply.prototype, "liked", void 0);
-__decorate([
-    type_graphql_1.Field(),
     typeorm_1.PrimaryColumn(),
     __metadata("design:type", Number)
 ], Reply.prototype, "userId", void 0);
 __decorate([
     typeorm_1.ManyToOne(() => User_1.User, (user) => user.replies),
     __metadata("design:type", User_1.User)
-], Reply.prototype, "user", void 0);
+], Reply.prototype, "users", void 0);
 __decorate([
     type_graphql_1.Field(),
     typeorm_1.PrimaryColumn(),
@@ -38,7 +33,7 @@ __decorate([
 __decorate([
     typeorm_1.ManyToOne(() => Post_1.Post, (post) => post.replies),
     __metadata("design:type", Post_1.Post)
-], Reply.prototype, "post", void 0);
+], Reply.prototype, "posts", void 0);
 Reply = __decorate([
     type_graphql_1.ObjectType(),
     typeorm_1.Entity()

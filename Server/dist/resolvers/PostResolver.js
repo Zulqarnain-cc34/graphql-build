@@ -32,7 +32,7 @@ let PostResolver = class PostResolver {
             return Post_1.Post.findOne(id);
         });
     }
-    posts(limit, cursor) {
+    posts(limit, cursor, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
             const reallimit = Math.min(50, limit);
             const replacements = [];
@@ -40,6 +40,7 @@ let PostResolver = class PostResolver {
             if (cursor) {
                 replacements.push(new Date(parseInt(cursor)));
             }
+            replacements.push(req.session.userId);
             const posts = yield typeorm_1.getConnection().query(`
             select p.*,
             json_build_object(
@@ -51,7 +52,7 @@ let PostResolver = class PostResolver {
                 ) creator
             from post p
             inner join public.user u on u.id=p.creatorid
-            ${cursor ? `where p."createdAt"< $2` : ""}
+            ${cursor ? `where p."createdAt"> $2` : ""}
             order by "createdAt" DESC
             limit $1
         `, replacements);
@@ -110,8 +111,9 @@ __decorate([
     type_graphql_1.Query(() => [Post_1.Post]),
     __param(0, type_graphql_1.Arg("limit", () => type_graphql_1.Int)),
     __param(1, type_graphql_1.Arg("cursor", () => String, { nullable: true })),
+    __param(2, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", [Number, String, Object]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "posts", null);
 __decorate([

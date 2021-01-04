@@ -1,5 +1,48 @@
 .infobar {
     display: flex;
-    flex: 0.2;
+    flex-direction: column;
+    flex: 0.25;
     background-color: #2f3136;
+}
+
+.active {
+    display: flex;
+    flex-direction: column;
+    /*align-items: center;*/
+    /*justify-content: flex-start;*/
+    margin-top: 20%;
+    /*width: 80%;*/
+    padding: 15px;
+}
+
+.active>h2 {
+    display: block;
+    font-size: 12px;
+    line-height: 16px;
+    color: #b9bbbe;
+    font-weight: 600;
+}
+
+.infotab {
+    background-color: #36393f;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px 16px;
+    border-radius: 4px;
+    line-height: 1.2;
+}
+
+.infotab>h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    line-height: 20px;
+}
+
+.infotab>p {
+    color: #b9bbbe;
+    font-size: 13px;
+    line-height: 18px;
 }

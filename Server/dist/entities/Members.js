@@ -27,15 +27,17 @@ __decorate([
     __metadata("design:type", Number)
 ], Members.prototype, "userId", void 0);
 __decorate([
-    typeorm_1.ManyToOne(() => User_1.User, (user) => user.users),
+    type_graphql_1.Field(() => User_1.User, { nullable: true }),
+    typeorm_1.ManyToOne(() => User_1.User, (user) => user.memberin),
     __metadata("design:type", User_1.User)
-], Members.prototype, "user", void 0);
+], Members.prototype, "users", void 0);
 __decorate([
     type_graphql_1.Field(),
     typeorm_1.PrimaryColumn(),
     __metadata("design:type", Number)
 ], Members.prototype, "roomId", void 0);
 __decorate([
+    type_graphql_1.Field(() => Rooms_1.Rooms, { nullable: true }),
     typeorm_1.ManyToOne(() => Rooms_1.Rooms, (room) => room.rooms),
     __metadata("design:type", Rooms_1.Rooms)
 ], Members.prototype, "room", void 0);
