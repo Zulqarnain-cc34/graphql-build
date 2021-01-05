@@ -3,6 +3,7 @@
     flex: 0.23;
     background-color: #2f3136;
     font-size: 14px;
+    min-height: 20rem;
 }
 
 .sidebar-options {
@@ -39,6 +40,12 @@
     padding: 0px 3px;
 }
 
+@media (max-height: 750px) {
+    .sidebar-groups-user {
+        min-height: 60px;
+    }
+}
+
 .sidebar-groups-user-content {
     display: flex;
     flex-direction: column;
@@ -73,6 +80,11 @@
 .sidebar-groups-user-icondiv {
     padding: 3px;
     /*margi*/
+}
+
+.sidebar-options-user>img {
+    width: 25px;
+    height: 25px;
 }
 
 .sidebar-groups-user-icons {
@@ -136,7 +148,7 @@
 .sidebar-options-features {
     display: flex;
     flex-direction: column;
-    height: 60%;
+    height: 40%;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
@@ -145,7 +157,7 @@
 .sidebar-options-top {
     display: flex;
     flex-direction: column;
-    height: 53%;
+    /*height: 53%;*/
     align-items: center;
     justify-content: space-between;
 }

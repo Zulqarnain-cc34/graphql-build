@@ -1,4 +1,3 @@
-import { faStar } from "@fortawesome/free-regular-svg-icons";
 import {
     faCog,
     faEllipsisV,
@@ -6,12 +5,17 @@ import {
     faPlus,
     faThumbtack,
 } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import "../../../Css//Components/Home/chatheader.css";
-interface ChatheaderProps { }
+import "../../../styles/Components/Home/chatheader.css";
+import Star from "../../../icons/star.svg";
+import { Icon } from "./Icon";
+interface ChatheaderProps {
+    roomId: string;
+}
 
-export const Chatheader: React.FC<ChatheaderProps> = () => {
+export const Chatheader: React.FC<ChatheaderProps> = ({ roomId }) => {
+    console.log(roomId);
+
     return (
         <div className="chatheader">
             <div className="header-left">
@@ -19,34 +23,46 @@ export const Chatheader: React.FC<ChatheaderProps> = () => {
                 <div className="header-left-info">
                     <p>6 members</p>
                     <div className="header-left-info-Add">
-                        <FontAwesomeIcon
-                            icon={faPlus}
-                            className="header-left-info-Addicon"
-                        />
+                        <Icon type="fonticon" icon={faPlus} />
                         <p>Add member</p>
                     </div>
                 </div>
             </div>
             <div className="header-right">
-                <FontAwesomeIcon
-                    icon={faThumbtack}
-                    className="header-right-icons"
-                />
-                <FontAwesomeIcon
-                    icon={faInfoCircle}
-                    className="header-right-icons"
-                />
+                {/*<div className="header-right-icons">
+                    <FontAwesomeIcon
+                        icon={faThumbtack}
+                        className="header-right-icon"
+                    />
+                </div>
+                <div className="header-right-icons">
+                    <FontAwesomeIcon
+                        icon={faInfoCircle}
+                        className="header-right-icon"
+                        id="warning"
+                    />
+                </div>
 
-                <FontAwesomeIcon icon={faCog} className="header-right-icons" />
-                <FontAwesomeIcon
-                    icon={faStar}
-                    style={{ color: "golden" }}
-                    className="header-right-icons"
-                />
-                <FontAwesomeIcon
-                    icon={faEllipsisV}
-                    className="header-right-icons"
-                />
+                <div className="header-right-icons">
+                    <FontAwesomeIcon
+                        icon={faCog}
+                        className="header-right-icon"
+                    />
+                </div>
+                <div className="header-right-icons">
+                    <img src={Star} alt="" className="header-right-icon" />
+                </div>
+                <div className="header-right-icons">
+                    <FontAwesomeIcon
+                        icon={faEllipsisV}
+                        className="header-right-icon"
+                    />
+                </div>*/}
+                <Icon type="fonticon" icon={faEllipsisV} />
+                <Icon type="fonticon" icon={faCog} />
+                <Icon type="img" src={Star} />
+                <Icon type="fonticon" icon={faThumbtack} />
+                <Icon type="fonticon" icon={faInfoCircle} />
             </div>
         </div>
     );

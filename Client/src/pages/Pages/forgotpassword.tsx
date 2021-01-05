@@ -3,9 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 
 import { Link } from "react-router-dom";
-import "../../Css/pages/forgotpassword.css";
+import "../../styles/pages/forgotpassword.css";
 import { useForgotpasswordMutation } from "../../generated/graphql";
-interface ChangePasswordProps { }
+interface ChangePasswordProps {}
 
 export const ForgotPassword: React.FC<ChangePasswordProps> = () => {
     const [email, setemail] = useState<string>("");

@@ -1,21 +1,30 @@
-import { Avatar } from '@material-ui/core';
-import React from 'react'
-import "../../../Css/Components/Home/message.css";
+import { Avatar } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import "../../../styles/Components/Home/message.css";
 interface MessageProps {
-    profileimg: string,
-    user: string,
-    message: string,
-    createdAt: string,
-
+    username: string;
+    message: string;
+    createdAt: string;
 }
 
-export const Message: React.FC<MessageProps> = ({ user, profileimg, createdAt, message }) => {
-    return (<div className="message">
-        <Avatar src={profileimg} className="message-avatar" />
-        <div className="message-content">
-            <h4>{message}</h4>
-            <p>{createdAt}</p>
-            <p>{user}</p>
+export const Message: React.FC<MessageProps> = ({
+    username,
+    createdAt,
+    message,
+}) => {
+    const [seed, setSeed] = useState<number>(0);
+    useEffect(() => {
+        setSeed(Math.floor(Math.random() * 5000));
+    }, [setSeed]);
+    console.log(createdAt.split("T"));
+    return (
+        <div className="message">
+            <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} className="message-avatar" />
+            <div className="message-content">
+                <h3>{username}</h3>
+                <p>{message}</p>
+                {<h4>{createdAt.split("T")[1]}</h4>}
+            </div>
         </div>
-    </div>);
-}
+    );
+};

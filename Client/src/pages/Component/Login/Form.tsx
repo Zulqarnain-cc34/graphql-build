@@ -5,13 +5,18 @@ import {
     faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useState } from "react";
-import "../../../Css/Components/Login/form.css";
+import "../../../styles/Components/Login/form.css";
 import { faEnvelope, faUser } from "@fortawesome/free-regular-svg-icons";
-import { useLoginMutation, useRegisterMutation } from "../../../generated/graphql";
+import {
+    useLoginMutation,
+    useRegisterMutation,
+} from "../../../generated/graphql";
 import { toErrorMap } from "../../../utils/toErrorMap";
 import { errorMap } from "../../../types";
-import { useUser } from "../../../context";
+//import { useUser } from "../../../context";
 import { Link, useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { GET_USER } from "../../../context/actionsTypes";
 
 interface FormProps {
     icons: Array<IconDefinition>;
@@ -19,8 +24,10 @@ interface FormProps {
 }
 
 export const Form: React.FC<FormProps> = ({ icons, registers }) => {
+    const dispatch = useDispatch();
+
     let history = useHistory();
-    const { setuser } = useUser();
+    //const { setuser } = useUser();
     const [, register] = useRegisterMutation();
     const [, login] = useLoginMutation();
     const [username, setusername] = useState<string>("");
@@ -46,7 +53,13 @@ export const Form: React.FC<FormProps> = ({ icons, registers }) => {
         await e.preventDefault();
         const response = await register({ password, username, email });
         if (response.data?.register.user) {
-            setuser(response.data?.register.user);
+            console.log(response.data?.register.user);
+            dispatch({
+                type: GET_USER,
+                users: response.data?.register.user
+            })
+
+            //setuser(response.data?.register.user);
             history.push("/contactform");
         } else if (response.data?.register.errors) {
             const error = toErrorMap(response.data?.register.errors);
@@ -66,7 +79,11 @@ export const Form: React.FC<FormProps> = ({ icons, registers }) => {
         });
 
         if (response.data?.login.user) {
-            setuser(response.data?.login.user);
+            console.log(response.data?.login.user);
+            dispatch({
+                type: GET_USER,
+                user: response.data?.login.user
+            })
             history.push("/");
         } else if (response.data?.login.errors) {
             const error = toErrorMap(response.data?.login.errors);

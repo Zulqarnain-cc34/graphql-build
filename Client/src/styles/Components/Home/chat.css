@@ -5,3 +5,9 @@
     flex: 0.52;
     background-color: #36393f;
 }
+
+@media (max-width: 800px) {
+    .chat {
+        flex: 0.75;
+    }
+}

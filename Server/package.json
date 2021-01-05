@@ -38,6 +38,7 @@
         "pg": "^8.4.2",
         "pusher": "^4.0.1",
         "rate-limit-redis": "^2.0.0",
+        "redux-thunk": "^2.3.0",
         "reflect-metadata": "^0.1.13",
         "tsconfig.json": "^1.0.7",
         "type-graphql": "^1.1.0",

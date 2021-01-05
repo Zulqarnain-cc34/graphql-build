@@ -5,6 +5,12 @@
     background-color: #2f3136;
 }
 
+@media (max-width: 800px) {
+    .infobar {
+        display: none;
+    }
+}
+
 .active {
     display: flex;
     flex-direction: column;

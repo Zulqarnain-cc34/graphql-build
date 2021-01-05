@@ -27,12 +27,12 @@ __decorate([
     __metadata("design:type", Number)
 ], Post.prototype, "id", void 0);
 __decorate([
-    type_graphql_1.Field(() => String),
+    type_graphql_1.Field(() => Date),
     typeorm_1.CreateDateColumn(),
     __metadata("design:type", Object)
 ], Post.prototype, "createdAt", void 0);
 __decorate([
-    type_graphql_1.Field(() => String),
+    type_graphql_1.Field(() => Date),
     typeorm_1.UpdateDateColumn(),
     __metadata("design:type", Object)
 ], Post.prototype, "updatedAt", void 0);
@@ -50,6 +50,11 @@ __decorate([
     typeorm_1.Column({ type: "int", default: 0 }),
     __metadata("design:type", Number)
 ], Post.prototype, "comments", void 0);
+__decorate([
+    type_graphql_1.Field(() => type_graphql_1.ID),
+    typeorm_1.Column(),
+    __metadata("design:type", Number)
+], Post.prototype, "roomId", void 0);
 __decorate([
     type_graphql_1.Field(),
     typeorm_1.Column({ type: "int", default: 0 }),

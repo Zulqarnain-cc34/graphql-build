@@ -7,7 +7,8 @@ import Home from "./pages/Pages/Home";
 import { Contact } from "./pages/Pages/Contact";
 import { ForgotPassword } from "./pages/Pages/forgotpassword";
 import { ChangePassword } from "./pages/Pages/ChangePassword";
-interface AppProps {}
+
+interface AppProps { }
 
 export const App: React.FC<AppProps> = () => {
     return (
@@ -20,6 +21,7 @@ export const App: React.FC<AppProps> = () => {
                         path="/change-password/:tokenId"
                         component={ChangePassword}
                     ></Route>
+                    <Route path="/rooms/:roomId" component={Home}></Route>
                     <Route
                         path="/forgotpassword"
                         component={ForgotPassword}
@@ -27,7 +29,7 @@ export const App: React.FC<AppProps> = () => {
                     <Route path="/" component={Home}></Route>
                 </Switch>
             </Router>
-        </div>
+        </div >
     );
 };
 export default App;

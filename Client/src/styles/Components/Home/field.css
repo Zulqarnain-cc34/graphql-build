@@ -5,8 +5,9 @@
     width: 100%;
     /*position: relative;*/
     /*overflow-x: hidden;*/
-    z-index: 1;
+    /*z-index: 23;*/
     transition: all 0.2s ease;
+    cursor: pointer;
 }
 
 .field-info {
@@ -20,18 +21,29 @@
 
 .field-info>h2 {
     font-size: 14px;
-    font-weight: 450;
-    color: #cecece;
+    line-height: 18px;
+    font-weight: 550;
+    color: #b6b6b6;
 }
 
 .field-info:hover h2 {
     color: #ffffff;
 }
 
-.field-info:hover+.field-elements {
+
+/*.field-info:hover+.field-elements {
     display: flex;
     flex-direction: column;
     transform: translateY(0);
+}*/
+
+.selected {
+    display: flex;
+    flex-direction: column;
+    pointer-events: all;
+    /*align-items: space-between;*/
+    transform: translateY(0);
+    width: 100%;
 }
 
 .field-info-icon {
@@ -51,15 +63,9 @@
 }
 
 .field-elements {
-    /*display: flex;*/
     width: 100%;
-    /*position: absolute;*/
-    /*bottom: 0;*/
     display: none;
     pointer-events: none;
     transform: translateY(-100%);
     transition: 1s all ease-in-out;
-    /*overflow: scroll;
-    overflow-x: hidden;
-    overflow-y: hidden;*/
 }

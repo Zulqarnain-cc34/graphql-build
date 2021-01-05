@@ -20,7 +20,7 @@ export type Query = {
   me?: Maybe<User>;
   replies: Array<Reply>;
   post?: Maybe<Post>;
-  posts: Array<Post>;
+  posts: PostsResponse;
   Rooms: Array<Rooms>;
   getRoom: MembersResponse;
 };
@@ -32,7 +32,7 @@ export type QueryPostArgs = {
 
 
 export type QueryPostsArgs = {
-  cursor?: Maybe<Scalars['String']>;
+  roomId: Scalars['Int'];
   limit: Scalars['Int'];
 };
 
@@ -63,9 +63,29 @@ export type Post = {
   updatedAt: Scalars['String'];
   creator: User;
   comments: Scalars['Float'];
+  roomId: Scalars['ID'];
   likes: Scalars['Float'];
   message: Scalars['String'];
   creatorid: Scalars['ID'];
+};
+
+export type PostsResponse = {
+  __typename?: 'PostsResponse';
+  success?: Maybe<Array<Success>>;
+  posts?: Maybe<Array<Post>>;
+  errors?: Maybe<Array<FieldError>>;
+};
+
+export type Success = {
+  __typename?: 'Success';
+  field: Scalars['String'];
+  message: Scalars['String'];
+};
+
+export type FieldError = {
+  __typename?: 'FieldError';
+  field: Scalars['String'];
+  message: Scalars['String'];
 };
 
 export type Rooms = {
@@ -83,18 +103,6 @@ export type MembersResponse = {
   success?: Maybe<Array<Success>>;
   errors?: Maybe<Array<FieldError>>;
   rooms?: Maybe<Array<Members>>;
-};
-
-export type Success = {
-  __typename?: 'Success';
-  field: Scalars['String'];
-  message: Scalars['String'];
-};
-
-export type FieldError = {
-  __typename?: 'FieldError';
-  field: Scalars['String'];
-  message: Scalars['String'];
 };
 
 export type Members = {
@@ -116,7 +124,7 @@ export type Mutation = {
   changePassword: UserResponse;
   hitlike: Scalars['Boolean'];
   removelike: Scalars['Boolean'];
-  createpost: Post;
+  createpost: PostResponse;
   updatepost: Post;
   deletepost: Scalars['Boolean'];
   leaveRoom: BoolResponse;
@@ -162,6 +170,7 @@ export type MutationRemovelikeArgs = {
 
 
 export type MutationCreatepostArgs = {
+  roomId: Scalars['Int'];
   message: Scalars['String'];
 };
 
@@ -209,6 +218,13 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
+export type PostResponse = {
+  __typename?: 'PostResponse';
+  success?: Maybe<Array<Success>>;
+  post?: Maybe<Post>;
+  errors?: Maybe<Array<FieldError>>;
+};
+
 export type BoolResponse = {
   __typename?: 'boolResponse';
   success?: Maybe<Array<Success>>;
@@ -226,6 +242,15 @@ export type RoomResponse = {
 export type RegularErrorFragment = (
   { __typename?: 'FieldError' }
   & Pick<FieldError, 'field' | 'message'>
+);
+
+export type RegularPostsFragment = (
+  { __typename?: 'Post' }
+  & Pick<Post, 'id' | 'createdAt' | 'updatedAt' | 'creatorid' | 'message'>
+  & { creator: (
+    { __typename?: 'User' }
+    & RegularUserFragment
+  ) }
 );
 
 export type RegularRoomsFragment = (
@@ -275,6 +300,29 @@ export type CreateRoomMutation = (
     & { rooms?: Maybe<(
       { __typename?: 'Rooms' }
       & RegularRoomsFragment
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & RegularErrorFragment
+    )>>, success?: Maybe<Array<(
+      { __typename?: 'Success' }
+      & RegularSuccessFragment
+    )>> }
+  ) }
+);
+
+export type CreatepostMutationVariables = Exact<{
+  message: Scalars['String'];
+  roomId: Scalars['Int'];
+}>;
+
+
+export type CreatepostMutation = (
+  { __typename?: 'Mutation' }
+  & { createpost: (
+    { __typename?: 'PostResponse' }
+    & { post?: Maybe<(
+      { __typename?: 'Post' }
+      & RegularPostsFragment
     )>, errors?: Maybe<Array<(
       { __typename?: 'FieldError' }
       & RegularErrorFragment
@@ -361,6 +409,29 @@ export type RegisterMutation = (
   ) }
 );
 
+export type GetpostsQueryVariables = Exact<{
+  limit: Scalars['Int'];
+  roomId: Scalars['Int'];
+}>;
+
+
+export type GetpostsQuery = (
+  { __typename?: 'Query' }
+  & { posts: (
+    { __typename?: 'PostsResponse' }
+    & { posts?: Maybe<Array<(
+      { __typename?: 'Post' }
+      & RegularPostsFragment
+    )>>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & RegularErrorFragment
+    )>>, success?: Maybe<Array<(
+      { __typename?: 'Success' }
+      & RegularSuccessFragment
+    )>> }
+  ) }
+);
+
 export type GetroomsQueryVariables = Exact<{
   limit: Scalars['Int'];
 }>;
@@ -403,6 +474,24 @@ export const RegularErrorFragmentDoc = gql`
   message
 }
     `;
+export const RegularUserFragmentDoc = gql`
+    fragment RegularUser on User {
+  id
+  username
+}
+    `;
+export const RegularPostsFragmentDoc = gql`
+    fragment RegularPosts on Post {
+  id
+  createdAt
+  updatedAt
+  creatorid
+  message
+  creator {
+    ...RegularUser
+  }
+}
+    ${RegularUserFragmentDoc}`;
 export const RegularRoomsFragmentDoc = gql`
     fragment RegularRooms on Rooms {
   id
@@ -415,12 +504,6 @@ export const RegularSuccessFragmentDoc = gql`
     fragment RegularSuccess on Success {
   field
   message
-}
-    `;
-export const RegularUserFragmentDoc = gql`
-    fragment RegularUser on User {
-  id
-  username
 }
     `;
 export const ChangePasswordDocument = gql`
@@ -460,6 +543,27 @@ ${RegularSuccessFragmentDoc}`;
 
 export function useCreateRoomMutation() {
   return Urql.useMutation<CreateRoomMutation, CreateRoomMutationVariables>(CreateRoomDocument);
+};
+export const CreatepostDocument = gql`
+    mutation createpost($message: String!, $roomId: Int!) {
+  createpost(roomId: $roomId, message: $message) {
+    post {
+      ...RegularPosts
+    }
+    errors {
+      ...RegularError
+    }
+    success {
+      ...RegularSuccess
+    }
+  }
+}
+    ${RegularPostsFragmentDoc}
+${RegularErrorFragmentDoc}
+${RegularSuccessFragmentDoc}`;
+
+export function useCreatepostMutation() {
+  return Urql.useMutation<CreatepostMutation, CreatepostMutationVariables>(CreatepostDocument);
 };
 export const ForgotpasswordDocument = gql`
     mutation forgotpassword($email: String!) {
@@ -527,6 +631,27 @@ export const RegisterDocument = gql`
 
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
+};
+export const GetpostsDocument = gql`
+    query getposts($limit: Int!, $roomId: Int!) {
+  posts(limit: $limit, roomId: $roomId) {
+    posts {
+      ...RegularPosts
+    }
+    errors {
+      ...RegularError
+    }
+    success {
+      ...RegularSuccess
+    }
+  }
+}
+    ${RegularPostsFragmentDoc}
+${RegularErrorFragmentDoc}
+${RegularSuccessFragmentDoc}`;
+
+export function useGetpostsQuery(options: Omit<Urql.UseQueryArgs<GetpostsQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<GetpostsQuery>({ query: GetpostsDocument, ...options });
 };
 export const GetroomsDocument = gql`
     query getrooms($limit: Int!) {

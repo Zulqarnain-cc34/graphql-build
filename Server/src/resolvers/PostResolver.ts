@@ -11,6 +11,8 @@ import {
 import { getConnection } from "typeorm";
 import { MyContext } from "../types";
 import { isAuth } from "../middlewares/isAuth";
+import { isRooms } from "../middlewares/isRooms";
+import { PostResponse, PostsResponse } from "./Objecttypes/PostObject";
 
 @Resolver(Post)
 export class PostResolver {
@@ -19,23 +21,27 @@ export class PostResolver {
         return Post.findOne(id);
     }
 
-    @Query(() => [Post])
+    @Query(() => PostsResponse)
+    @UseMiddleware(isAuth, isRooms)
     async posts(
         @Arg("limit", () => Int) limit: number,
-        @Arg("cursor", () => String, { nullable: true }) cursor: string | null,
-        @Ctx() { req }: MyContext
-    ): Promise<Post[]> {
+        //@Arg("cursor", () => String, { nullable: true }) cursor: string | null,
+        @Arg("roomId", () => Int) roomId: number
+    ): Promise<PostsResponse> {
         const reallimit = Math.min(50, limit);
 
         const replacements: any[] = [];
         replacements.push(reallimit);
 
-        if (cursor) {
-            replacements.push(new Date(parseInt(cursor)));
-        }
-        replacements.push(req.session.userId);
-        const posts = await getConnection().query(
-            `
+        //if (cursor) {
+        //    replacements.push(new Date(parseInt(cursor)));
+        //}  ${cursor ? `where p."createdAt"> $2` : ""}
+        replacements.push(roomId);
+
+        let posts;
+        try {
+            posts = await getConnection().query(
+                `
             select p.*,
             json_build_object(
                 'id', u.id,
@@ -46,29 +52,34 @@ export class PostResolver {
                 ) creator
             from post p
             inner join public.user u on u.id=p.creatorid
-            ${cursor ? `where p."createdAt"> $2` : ""}
-            order by "createdAt" DESC
+            where p."roomId"=$2
+            order by "createdAt" ASC
             limit $1
         `,
-            replacements
-        );
-        return posts;
+                replacements
+            );
+        } catch (err) {
+            return { errors: [{ field: "posts", message: err.detail }] };
+        }
+        return {
+            posts,
+            success: [{ field: "posts", message: "Successfully queryed" }],
+        };
     }
 
-    //@Subscription(() => Post, {
-    //    topics: "CREATE POST",
-    //    filter: ({ payload }) => payload,
-    //})
-    //async getPost(
-
-    //): Promise<Post | undefined> { }
-
-    @Mutation(() => Post)
-    @UseMiddleware(isAuth)
+    @Mutation(() => PostResponse)
+    @UseMiddleware(isAuth, isRooms)
     async createpost(
         @Arg("message", () => String) message: string,
+        @Arg("roomId", () => Int) roomId: number,
         @Ctx() { req }: MyContext
-    ): Promise<Post> {
+    ): Promise<PostResponse> {
+        if (!roomId) {
+            return {
+                errors: [{ field: "Room", message: "Room id is required" }],
+            };
+        }
+
         let post;
         try {
             const result = await getConnection()
@@ -78,28 +89,23 @@ export class PostResolver {
                 .values({
                     message: message,
                     creatorid: req.session.userId,
+                    roomId: roomId,
                 })
                 .returning("*")
                 .execute();
             post = result.raw[0];
-            //const payload = post;
-            //await pubSub.publish("CREATE POST", payload);
         } catch (err) {
-            console.log(err);
+            return {
+                errors: [
+                    { field: "PostError", message: "unable to create post" },
+                ],
+            };
         }
-        return post;
+        return {
+            post,
+            success: [{ field: "Post", message: "Successfully Found posts" }],
+        };
     }
-
-    //@Mutation(() => [User], { nullable: true })
-    //async getreaderinfo(@Ctx() { req }: MyContext): Promise<User[] | null> {
-    //    const users = await User.find({ where: { id: req.session.userId } });
-    //    console.log(users);
-    //    if (!users) {
-    //        return null;
-    //    }
-    //    return users;
-    //}
-
     @Mutation(() => Post)
     async updatepost(
         @Arg("id", () => Int) id: number,

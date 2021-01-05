@@ -1,7 +1,37 @@
-import { combineReducers, createStore } from "redux";
+import { UserAction, UserState } from "../types";
+import * as actionTypes from "./actionsTypes";
 
-export const rootReducer = combineReducers({});
+const InitialState: UserState = {
+    user: {
+        id: 0,
+        username: "",
+        //email: "",
+        //createdAt: '',
+        //updatedAt: "",
+    }
+}
 
-export type AppState = ReturnType<typeof rootReducer>;
+const reducer = (state: UserState = InitialState, action: UserAction) => {
+    console.log("action :", action);
+    console.log("state  :", state);
 
-export const store = createStore(rootReducer);
+    console.log(action?.users)
+
+    switch (action.type) {
+        case actionTypes.GET_USER:
+            return {
+                ...state,
+                users: action?.users,
+            };
+
+        case actionTypes.REMOVE_USER:
+            return {
+                ...state,
+                user: null,
+            };
+
+        default:
+            return state;
+    }
+};
+export default reducer;

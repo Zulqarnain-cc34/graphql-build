@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Form } from "../Component/Login/Form";
-import "../../Css/pages/login.css";
+import "../../styles/pages/login.css";
 import {
     faGoogle,
     faFacebook,
     faTwitter,
     faLinkedin,
 } from "@fortawesome/free-brands-svg-icons";
-import Rocket from "../../img/rocket.svg";
-import Table from "../../img/table.svg";
-interface LoginProps { }
+import Rocket from "../../icons/rocket.svg";
+import Table from "../../icons/table.svg";
+interface LoginProps {}
 
 const Login: React.FC<LoginProps> = () => {
     const [SignUp, setSignUp] = useState<boolean>(false);

@@ -19,11 +19,11 @@ export class Post extends BaseEntity {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Field(() => String)
+    @Field(() => Date)
     @CreateDateColumn()
     createdAt = new Date();
 
-    @Field(() => String)
+    @Field(() => Date)
     @UpdateDateColumn()
     updatedAt = Date();
 
@@ -37,6 +37,10 @@ export class Post extends BaseEntity {
     @Field()
     @Column({ type: "int", default: 0 })
     comments: number;
+
+    @Field(() => ID)
+    @Column()
+    roomId: number;
 
     @Field()
     @Column({ type: "int", default: 0 })

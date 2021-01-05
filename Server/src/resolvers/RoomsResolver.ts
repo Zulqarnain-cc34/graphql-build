@@ -15,7 +15,6 @@ import { User } from "../entities/User";
 import { RoomResponse } from "./Objecttypes/RoomsObject";
 import { MembersResponse } from "./Objecttypes/MembersObject";
 import { boolResponse } from "./Objecttypes/matchingtypes/UpdatedResponse";
-import { error } from "console";
 
 @Resolver(Rooms)
 export class RoomResolver {
