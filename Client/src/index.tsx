@@ -13,8 +13,7 @@ import {
 } from "urql";
 import { cacheExchange } from "@urql/exchange-graphcache";
 import { cacheUpdates } from "./cache";
-import { Provider as UserProvider } from "react-redux";
-import { store } from "./context/Store";
+import { StateProvider } from "./context/stateProvider";
 
 const serverSideRendering = async () => {
     const ssr = ssrExchange({ isClient: false });
@@ -33,11 +32,11 @@ const serverSideRendering = async () => {
 
     ReactDOM.render(
         <React.StrictMode>
-            <UserProvider store={store}>
+            <StateProvider>
                 <Provider value={client}>
                     <App />
                 </Provider>
-            </UserProvider>
+            </StateProvider>
         </React.StrictMode>,
         document.getElementById("root")
     );

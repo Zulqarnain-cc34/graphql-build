@@ -16,7 +16,6 @@ export const Message: React.FC<MessageProps> = ({
     useEffect(() => {
         setSeed(Math.floor(Math.random() * 5000));
     }, [setSeed]);
-    console.log(createdAt.split("T"));
     return (
         <div className="message">
             <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} className="message-avatar" />

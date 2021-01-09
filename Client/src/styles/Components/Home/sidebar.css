@@ -1,8 +1,8 @@
 .sidebar {
     display: flex;
     flex: 0.23;
-    background-color: #2f3136;
-    font-size: 14px;
+    background-color: var(--grey-light);
+    font-size: 1.2rem;
     min-height: 20rem;
 }
 
@@ -11,7 +11,7 @@
     flex-direction: column;
     flex: 0.25;
     padding: 25px 6px;
-    background-color: #202225;
+    background-color: var(--grey-dark);
     justify-content: space-between;
     align-items: center;
 }
@@ -37,7 +37,10 @@
     background-color: #27292c;
     justify-content: space-around;
     flex: 0.1;
-    padding: 0px 3px;
+    /*min-width: 130px;*/
+    padding: 0px 5px;
+    align-items: center;
+    transition: 0.2 all ease-in-out;
 }
 
 @media (max-height: 750px) {
@@ -52,39 +55,36 @@
     color: #fff;
     /*align-items: center;*/
     justify-content: center;
-    margin-right: 20px;
+    /*align-items: center;*/
+    /*margin-left: px;*/
+    /*margin-right: 20px;*/
 }
 
 .sidebar-groups-user-content>h2 {
-    font-size: 14px;
+    font-size: 1.1rem;
 }
 
 .sidebar-groups-user-content>p {
-    font-size: 12px;
+    font-size: 0.9rem;
     font-weight: 500;
 }
 
 .sidebar-groups-user-slack {
-    width: 28px !important;
-    height: 28px !important;
+    width: 25px !important;
+    height: 25px !important;
     /*margin-left: 10px;*/
 }
 
-.sidebar-groups-user-icon {
+
+/*.sidebar-groups-user-icon {
     width: 20px !important;
     height: 20px !important;
-    /*margin: 0 3px;*/
-    color: #dcddde;
-}
+    /*margin: 0 3px;
+    color: #dcddde;}*/
 
 .sidebar-groups-user-icondiv {
     padding: 3px;
     /*margi*/
-}
-
-.sidebar-options-user>img {
-    width: 25px;
-    height: 25px;
 }
 
 .sidebar-groups-user-icons {
@@ -121,7 +121,8 @@
     align-items: center;
     background-color: #202225;
     border-radius: 10px;
-    padding: 6px 10px;
+    padding: 5px 10px;
+    margin-top: 3px;
 }
 
 .sidebar-groups-searchicon {
@@ -135,7 +136,7 @@
     outline: none;
     border: none;
     text-decoration: none;
-    margin-left: 6px;
+    /*margin-left: 6px;*/
     color: #81858a;
     font-weight: 470;
     /*pad*/
@@ -177,10 +178,51 @@
 .sidebar-options-icons {
     width: 24px !important;
     height: 24px !important;
-    color: rgb(109, 108, 108) !important;
+    color: #999999 !important;
     cursor: pointer !important;
 }
 
 .sidebar-options-icons :hover {
     color: rgba(219, 219, 219, 0.918);
+}
+
+.createroom {
+    display: flex;
+    width: 90%;
+    justify-content: flex-end;
+}
+
+@media (max-width: 960px) {
+    .sidebar {
+        flex: 0.25;
+    }
+}
+
+@media (max-width: 800px) {
+    .sidebar {
+        flex: 0.2;
+    }
+    .sidebar-options {
+        display: none;
+    }
+    .sidebar-groups {
+        flex: 1;
+        /*flex-direction: row;*/
+        font-size: 1rem;
+    }
+    .sidebar-groups-user-content>p {
+        font-size: 0.8rem;
+    }
+    .sidebar-groups-user-content>h2 {
+        font-size: 1rem;
+    }
+    .sidebar-groups-user-slack {
+        width: 23px !important;
+        height: 23px !important;
+    }
+    .sidebar-groups-searchbar {
+        padding: 3px 5px;
+    }
+    /*.sidebar-groups-searchbar.sidebar-groups-b*/
+    /*;*/
 }

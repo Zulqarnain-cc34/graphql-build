@@ -5,59 +5,45 @@ import {
     faPlus,
     faThumbtack,
 } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
+import React, { useState } from "react";
 import "../../../styles/Components/Home/chatheader.css";
 import Star from "../../../icons/star.svg";
 import { Icon } from "./Icon";
+import { useStateValue } from "../../../context/stateProvider";
+import { useCreateRoomMutation } from "../../../generated/graphql";
+import { GET_ROOM } from "../../../context/actionsTypes";
 interface ChatheaderProps {
-    roomId: string;
 }
 
-export const Chatheader: React.FC<ChatheaderProps> = ({ roomId }) => {
-    console.log(roomId);
+export const Chatheader: React.FC<ChatheaderProps> = () => {
+    const [name, setname] = useState<string>("");
+    const { state, dispatch } = useStateValue();
+    const [, createroom] = useCreateRoomMutation();
+
+
+    const createRoom = async (e) => {
+        e.preventDefault();
+        const room = await createroom({ name: name });
+        dispatch({
+            type: GET_ROOM,
+            payload: { room }
+        })
+    }
 
     return (
         <div className="chatheader">
             <div className="header-left">
-                <h1># Roomname</h1>
+                {state.room.id !== "" ? (<h1># {state.room.Roomname}</h1>) : (<h1># Roomname</h1>)}
                 <div className="header-left-info">
-                    <p>6 members</p>
+                    <input type="text" onChange={(e) => setname(e.target.value)} className="header-addmember" />
+                    {state.room.members !== 0 ? (<p>{state.room.members} members</p>) : (<p>0 member</p>)}
                     <div className="header-left-info-Add">
-                        <Icon type="fonticon" icon={faPlus} />
+                        <Icon type="fonticon" icon={faPlus} onClick={createRoom} />
                         <p>Add member</p>
                     </div>
                 </div>
             </div>
             <div className="header-right">
-                {/*<div className="header-right-icons">
-                    <FontAwesomeIcon
-                        icon={faThumbtack}
-                        className="header-right-icon"
-                    />
-                </div>
-                <div className="header-right-icons">
-                    <FontAwesomeIcon
-                        icon={faInfoCircle}
-                        className="header-right-icon"
-                        id="warning"
-                    />
-                </div>
-
-                <div className="header-right-icons">
-                    <FontAwesomeIcon
-                        icon={faCog}
-                        className="header-right-icon"
-                    />
-                </div>
-                <div className="header-right-icons">
-                    <img src={Star} alt="" className="header-right-icon" />
-                </div>
-                <div className="header-right-icons">
-                    <FontAwesomeIcon
-                        icon={faEllipsisV}
-                        className="header-right-icon"
-                    />
-                </div>*/}
                 <Icon type="fonticon" icon={faEllipsisV} />
                 <Icon type="fonticon" icon={faCog} />
                 <Icon type="img" src={Star} />

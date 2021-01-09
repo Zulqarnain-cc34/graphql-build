@@ -1,35 +1,24 @@
-import { UserAction, UserState } from "../types";
+import { AppStateTypes, IActionTypes } from "../interfaces";
 import * as actionTypes from "./actionsTypes";
+import { InitialState } from "./initialState";
 
-const InitialState: UserState = {
-    user: {
-        id: 0,
-        username: "",
-        //email: "",
-        //createdAt: '',
-        //updatedAt: "",
-    }
-}
+const reducer = (state: AppStateTypes = InitialState, action: IActionTypes): AppStateTypes => {
 
-const reducer = (state: UserState = InitialState, action: UserAction) => {
-    console.log("action :", action);
-    console.log("state  :", state);
-
-    console.log(action?.users)
 
     switch (action.type) {
-        case actionTypes.GET_USER:
+        case actionTypes.GET_SESSION:
             return {
                 ...state,
-                users: action?.users,
+                user: action.payload.user,
             };
 
-        case actionTypes.REMOVE_USER:
+        case actionTypes.REMOVE_SESSION:
             return {
                 ...state,
                 user: null,
             };
-
+        case actionTypes.GET_ROOM:
+            return { ...state, room: action.payload.room }
         default:
             return state;
     }

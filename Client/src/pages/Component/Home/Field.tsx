@@ -4,6 +4,7 @@ import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { useGetroomsQuery } from "../../../generated/graphql";
 import { Fieldmembers } from "./Fieldmembers";
 import { Icon } from "./Icon";
+
 interface FieldProps {
     fieldname: string;
     type: string;
@@ -13,7 +14,6 @@ interface FieldProps {
 export const Field: React.FC<FieldProps> = ({ fieldname, type }) => {
     const [{ data }] = useGetroomsQuery({ variables: { limit: 10 } });
     const [selected, setSelected] = useState<boolean>(false);
-
     return (
         <div className="field">
             <div className="field-info">
@@ -24,7 +24,7 @@ export const Field: React.FC<FieldProps> = ({ fieldname, type }) => {
             <div className={selected ? "selected" : "field-elements"} >
                 {type.toLowerCase() === "rooms"
                     ? data?.getRoom.rooms.map((room) => (
-                        <Fieldmembers username={room?.room.Roomname} roomid={room?.room.id} />
+                        <Fieldmembers username={room?.room.Roomname} room={room.room} />
                     ))
                     : null}
             </div>

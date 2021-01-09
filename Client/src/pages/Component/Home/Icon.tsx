@@ -5,12 +5,18 @@ import "../../../styles/Components/Home/icon.css";
 interface IconProps {
         type: string;
         src?: string;
-        icon?: IconDefinition
-        style?: React.CSSProperties
-        onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
+        icon?: IconDefinition;
+        style?: React.CSSProperties;
+        onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
-export const Icon: React.FC<IconProps> = ({ type, src, icon, style, onClick }) => {
+export const Icon: React.FC<IconProps> = ({
+        type,
+        src,
+        icon,
+        style,
+        onClick,
+}) => {
         return (
                 <div className="icon">
                         {type === "fonticon" ? (
@@ -21,8 +27,7 @@ export const Icon: React.FC<IconProps> = ({ type, src, icon, style, onClick }) =
                                         <div className="icon-img" onClick={onClick} style={style}>
                                                 <img src={src} alt="" className="icon-img-img" />
                                         </div>
-                                )
-                        }
-                </div >
+                                )}
+                </div>
         );
 };

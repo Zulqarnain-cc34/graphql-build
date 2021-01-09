@@ -7,10 +7,9 @@ interface ChatProps { }
 
 export const Chat: React.FC<ChatProps> = () => {
     const { roomId } = useParams<{ roomId: string }>();
-    console.log(roomId);
     return (
         <div className="chat">
-            <Chatheader roomId={roomId} />
+            <Chatheader />
             <Chatarea roomId={roomId} />
         </div>
     );

@@ -7,22 +7,8 @@
     align-items: center;
     justify-content: space-between;
     flex: 0.1;
-    background-color: transparent;
+    background-color: var(--grey-interactive);
     border-bottom: 1px solid rgb(44, 44, 44);
-}
-
-@media (max-width: 800px) {
-    .header-left-info>p {
-        font-size: 2px;
-    }
-    .header-left-info-Add-icon {
-        width: 100px !important;
-    }
-    .header-left-info-Add>p {
-        font-size: 10px;
-        margin-left: 2px;
-        font-weight: 450;
-    }
 }
 
 .header-left {
@@ -32,7 +18,7 @@
 }
 
 .header-left>h1 {
-    font-size: 20px;
+    font-size: 1.5rem;
     color: rgb(255, 255, 255);
     font-weight: 450;
     margin-bottom: 5px;
@@ -89,4 +75,29 @@
 
 .header-right-icons:hover {
     color: rgb(148, 146, 146);
+}
+
+.header-addmember {
+    display: none;
+}
+
+@media (max-width: 800px) {
+    /*.chatheader {
+        padding: px;
+    }*/
+    .header-left-info {
+        font-size: 1rem;
+    }
+    .header-left-info>p {
+        font-size: 0.8rem;
+    }
+    /*.header-left-info-Add-icon {
+        width: 100px !important;
+    }*/
+    .header-left>h1 {
+        font-size: calc(1.1rem + 0.8vw);
+    }
+    .header-left-info-Add>p {
+        font-size: 0.8rem;
+    }
 }

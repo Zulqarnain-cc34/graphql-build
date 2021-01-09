@@ -4,3 +4,23 @@
     height: 100vh;
     background-color: #383437;
 }
+
+:root {
+    --grey-light: #2f3136;
+    --grey-bg: #36393f;
+    --grey-dark: #2f3136;
+    --grey-interactive: #2d2f33;
+    --grey-border: #a0a0a0;
+}
+
+
+/*--mobile-view: 800px;
+--tablet-view: 960px;
+--desktop-view: 1024px;*/
+
+
+/*@media (max-width: 800px) {
+    .home {
+        flex-direction: column;
+    }
+}*/

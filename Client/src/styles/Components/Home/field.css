@@ -6,6 +6,7 @@
     /*position: relative;*/
     /*overflow-x: hidden;*/
     /*z-index: 23;*/
+    font-size: 1.2rem;
     transition: all 0.2s ease;
     cursor: pointer;
 }
@@ -20,22 +21,15 @@
 }
 
 .field-info>h2 {
-    font-size: 14px;
+    font-size: 1.2rem;
     line-height: 18px;
-    font-weight: 550;
+    font-weight: 500;
     color: #b6b6b6;
 }
 
 .field-info:hover h2 {
     color: #ffffff;
 }
-
-
-/*.field-info:hover+.field-elements {
-    display: flex;
-    flex-direction: column;
-    transform: translateY(0);
-}*/
 
 .selected {
     display: flex;
@@ -46,26 +40,16 @@
     width: 100%;
 }
 
-.field-info-icon {
-    color: #d8d7d7 !important;
-    cursor: pointer !important;
-    transition: 0.2s all ease-in !important;
-    border-radius: 50%;
-    width: 24px !important;
-    height: 24px !important;
-    padding: 5px !important;
-}
-
-.field-info-icon:hover {
-    color: #ffffff !important;
-    transform: rotate(-180deg) !important;
-    background-color: #292828;
-}
-
 .field-elements {
     width: 100%;
     display: none;
     pointer-events: none;
     transform: translateY(-100%);
     transition: 1s all ease-in-out;
+}
+
+@media (max-width: 800px) {
+    .field-info>h2 {
+        font-size: 1rem;
+    }
 }
