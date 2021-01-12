@@ -3,18 +3,6 @@ import { ObjectType, Field } from "type-graphql";
 import { FieldError, Success } from "./matchingtypes/FieldError";
 
 @ObjectType()
-export class boolRoomResponse {
-    @Field(() => [Success], { nullable: true })
-    success?: Success[];
-
-    @Field(() => Boolean, { nullable: true })
-    updated?: boolean;
-
-    @Field(() => [FieldError], { nullable: true })
-    errors?: FieldError[];
-}
-
-@ObjectType()
 export class RoomsResponse {
     @Field(() => [Success], { nullable: true })
     success?: Success[];
@@ -36,4 +24,8 @@ export class RoomResponse {
 
     @Field(() => [FieldError], { nullable: true })
     errors?: FieldError[];
+}
+
+export interface roomOptions {
+    roomId: number;
 }

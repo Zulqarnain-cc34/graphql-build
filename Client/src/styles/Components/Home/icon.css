@@ -1,0 +1,48 @@
+.icon {
+    display: flex;
+    all: unset;
+    align-items: center;
+    max-width: 200px;
+    box-sizing: border-box;
+}
+
+.font-icon-icon {
+    width: 19px !important;
+    height: 19px !important;
+    color: #0566e6;
+    transition: all 0.2s ease-in-out;
+}
+
+.font-icon {
+    padding: 4px;
+    cursor: pointer;
+    margin: 0px 1px;
+}
+
+.icon-img {
+    padding: 3px;
+    cursor: pointer;
+    margin: 0px 1px;
+}
+
+.icon-img-img {
+    width: 19px !important;
+    height: 19px !important;
+    color: #0566e6;
+    transition: all 0.2s ease-in-out;
+}
+
+.font-icon:hover .font-icon-icon {
+    color: rgb(4, 8, 235);
+}
+
+@media (max-width: 800px) {
+    icon-img-img {
+        width: 15px !important;
+        height: 15px !important;
+    }
+    .font-icon-icon {
+        width: 15px !important;
+        height: 15px !important;
+    }
+}

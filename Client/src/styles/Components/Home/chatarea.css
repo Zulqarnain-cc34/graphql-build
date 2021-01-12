@@ -1,0 +1,87 @@
+.chatarea {
+    display: flex;
+    flex-direction: column;
+    flex: 0.9;
+    background-color: transparent;
+    /*background: url("https://discord.com/assets/b5eb2f7d6b3f8cc9b60be4a5dcf28015.svg");
+    background-repeat: no-repeat;
+    background-position: 45% 58%;*/
+    justify-content: center;
+    padding: 0px 10px;
+    padding-bottom: 0;
+    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    justify-content: space-between;
+    /*align-items: center;*/
+}
+
+.chattingarea {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    border-radius: 4px;
+    width: 100%;
+    flex: 0.92;
+    background-color: transparent;
+    overflow: scroll;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: red yellow;
+    /*overflow-y: hidden;*/
+}
+
+::-webkit-scrollbar {
+    width: 16px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--grey-light);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--grey-dark);
+    /*border-radius: 6px;*/
+    border: 3px solid var(--grey-dark);
+}
+
+.message-post {
+    display: flex;
+    flex-direction: column;
+    /*align-items: center;*/
+    justify-content: center;
+    flex: 0.08;
+    padding: 10px;
+    /*padding: 2px;*/
+    /*background-color: red;*/
+    /*margin-top: 15px;*/
+    /*padding: 2px;*/
+    /*flex-direction:*/
+    /*justify-content: center;*/
+    /*margin: 0 !important;*/
+}
+
+.message-message>form {
+    display: flex;
+    height: 40px;
+    width: 100%;
+    border-radius: 20px;
+    align-items: center;
+    /*padding: 4px;*/
+    background-color: var(--grey-dark);
+    /*padding: 3px;*/
+    border: 1px solid var(--grey-border);
+}
+
+.message-message>form>input {
+    width: 100%;
+    color: #131313;
+    outline: none;
+    border: none;
+    background-color: var(--grey-dark);
+}
+
+
+/*@media (max-width: 800px) {
+    .message-post {
+        /*padding: 15px;*/

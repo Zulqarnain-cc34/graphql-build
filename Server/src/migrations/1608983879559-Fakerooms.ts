@@ -109,5 +109,5 @@ export class Fakerooms1608983879559 implements MigrationInterface {
         `);
     }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {}
+    public async down(): Promise<void> {}
 }

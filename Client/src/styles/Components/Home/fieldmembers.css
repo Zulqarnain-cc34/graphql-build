@@ -1,0 +1,29 @@
+.fieldmembers {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    background-color: transparent;
+    border-radius: 5px;
+    /*z-index: 9999;*/
+    padding: 5px;
+    cursor: pointer;
+}
+
+.fieldmembers>h2 {
+    font-size: 1rem;
+    font-weight: 410;
+    color: rgba(0, 0, 0, 0.781);
+    margin-left: 12px;
+}
+
+.fieldmembers-avatar {
+    width: 25px !important;
+    height: 25px !important;
+    border-radius: 50% !important;
+}
+
+.fieldmembers:hover {
+    background-color: var(--interactive-hover);
+    /*color: rgba(219, 219, 219, 0);*/
+    /*background-color: #00ff00cc;*/
+}

@@ -4,37 +4,66 @@ import {
     Ctx,
     Int,
     Mutation,
+    PubSub,
+    PubSubEngine,
     Query,
     Resolver,
+    ResolverFilterData,
+    Root,
+    Subscription,
     UseMiddleware,
 } from "type-graphql";
 import { getConnection } from "typeorm";
 import { MyContext } from "../types";
 import { isAuth } from "../middlewares/isAuth";
+import { isRooms } from "../middlewares/isRooms";
+import { PostResponse, PostsResponse } from "./Objecttypes/PostObject";
+import { Topic } from "../Topics";
+import { roomOptions } from "./Objecttypes/RoomsObject";
 
 @Resolver(Post)
 export class PostResolver {
+    @Subscription(() => PostResponse, {
+        topics: Topic.NewPost,
+        filter: ({
+            payload,
+            args,
+        }: ResolverFilterData<PostResponse, roomOptions>) =>
+            payload.post.id === args.roomId,
+    })
+    Postadded(
+        @Arg("roomId", () => Int) roomId: number,
+        @Root() payload: PostResponse
+    ): PostResponse {
+        return payload;
+    }
+
     @Query(() => Post, { nullable: true })
     async post(@Arg("id", () => Int) id: number): Promise<Post | undefined> {
         return Post.findOne(id);
     }
 
-    @Query(() => [Post])
+    @Query(() => PostsResponse)
+    @UseMiddleware(isAuth, isRooms)
     async posts(
         @Arg("limit", () => Int) limit: number,
-        @Arg("cursor", () => String, { nullable: true }) cursor: string | null
-    ): Promise<Post[]> {
+        //@Arg("cursor", () => String, { nullable: true }) cursor: string | null,
+        @Arg("roomId", () => Int) roomId: number
+    ): Promise<PostsResponse> {
         const reallimit = Math.min(50, limit);
 
         const replacements: any[] = [];
         replacements.push(reallimit);
 
-        if (cursor) {
-            replacements.push(new Date(parseInt(cursor)));
-        }
+        //if (cursor) {
+        //    replacements.push(new Date(parseInt(cursor)));
+        //}  ${cursor ? `where p."createdAt"> $2` : ""}
+        replacements.push(roomId);
 
-        const posts = await getConnection().query(
-            `
+        let posts;
+        try {
+            posts = await getConnection().query(
+                `
             select p.*,
             json_build_object(
                 'id', u.id,
@@ -45,30 +74,37 @@ export class PostResolver {
                 ) creator
             from post p
             inner join public.user u on u.id=p.creatorid
-            ${cursor ? `where p."createdAt"< $2` : ""}
-            order by "createdAt" DESC
+            where p."roomId"=$2
+            order by "createdAt" ASC
             limit $1
         `,
-            replacements
-        );
-        return posts;
+                replacements
+            );
+        } catch (err) {
+            return { errors: [{ field: "posts", message: err.detail }] };
+        }
+        return {
+            posts,
+            success: [{ field: "posts", message: "Successfully queryed" }],
+        };
     }
 
-    //@Subscription(() => Post, {
-    //    topics: "CREATE POST",
-    //    filter: ({ payload }) => payload,
-    //})
-    //async getPost(
-
-    //): Promise<Post | undefined> { }
-
-    @Mutation(() => Post)
-    @UseMiddleware(isAuth)
+    @Mutation(() => PostResponse)
+    @UseMiddleware(isAuth, isRooms)
     async createpost(
         @Arg("message", () => String) message: string,
+        @Arg("roomId", () => Int) roomId: number,
+        @PubSub() pubSub: PubSubEngine,
         @Ctx() { req }: MyContext
-    ): Promise<Post> {
-        let post;
+    ): Promise<PostResponse> {
+        if (!roomId) {
+            return {
+                errors: [{ field: "Room", message: "Room id is required" }],
+            };
+        }
+
+        let post: Post;
+        let ids: number;
         try {
             const result = await getConnection()
                 .createQueryBuilder()
@@ -77,28 +113,44 @@ export class PostResolver {
                 .values({
                     message: message,
                     creatorid: req.session.userId,
+                    roomId: roomId,
                 })
                 .returning("*")
                 .execute();
-            post = result.raw[0];
-            //const payload = post;
-            //await pubSub.publish("CREATE POST", payload);
+            ids = result.raw[0].id;
+            const newpost = await getConnection().query(
+                `
+            select p.*,
+            json_build_object(
+                'id', u.id,
+                'createdAt', u."createdAt",
+                'updatedAt', u."updatedAt",
+                'username', u.username,
+                'email', u.email
+                ) creator
+            from post p
+            inner join public.user u on u.id=p.creatorid
+            where p.id=$1
+            `,
+                [ids]
+            );
+            post = newpost[0];
         } catch (err) {
-            console.log(err);
+            return {
+                errors: [
+                    { field: "PostError", message: "unable to create post" },
+                ],
+            };
         }
-        return post;
+        await pubSub.publish(Topic.NewPost, {
+            post,
+            success: [{ field: "Post", message: "Successfully Found posts" }],
+        });
+        return {
+            post,
+            success: [{ field: "Post", message: "Successfully Found posts" }],
+        };
     }
-
-    //@Mutation(() => [User], { nullable: true })
-    //async getreaderinfo(@Ctx() { req }: MyContext): Promise<User[] | null> {
-    //    const users = await User.find({ where: { id: req.session.userId } });
-    //    console.log(users);
-    //    if (!users) {
-    //        return null;
-    //    }
-    //    return users;
-    //}
-
     @Mutation(() => Post)
     async updatepost(
         @Arg("id", () => Int) id: number,

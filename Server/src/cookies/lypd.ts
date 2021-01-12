@@ -4,7 +4,7 @@ import { redis, RedisStore } from "../redis/redis";
 
 export const lypdCookie = session({
     name: COOKIE_NAME,
-    secret: "sdafosfoasjkflsdjfafa90eolsd",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
 

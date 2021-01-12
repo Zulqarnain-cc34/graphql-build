@@ -1,0 +1,28 @@
+.home {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    background-color: #383437;
+}
+
+:root {
+    --grey-light: #ececec;
+    --grey-bg: #f8f9fd;
+    --grey-dark: #dfdfdf;
+    --grey-interactive: #f7f7f7;
+    --grey-border: #a0a0a0;
+    --interactive-hover: #dad8d8;
+    --grey-medium: #dadada;
+}
+
+
+/*--mobile-view: 800px;
+--tablet-view: 960px;
+--desktop-view: 1024px;*/
+
+
+/*@media (max-width: 800px) {
+    .home {
+        flex-direction: column;
+    }
+}*/

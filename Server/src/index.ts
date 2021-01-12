@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import "dotenv-safe/config";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { createConnection } from "typeorm";
@@ -6,10 +7,9 @@ import { buildSchema } from "type-graphql";
 import { Post } from "./entities/Post";
 import { User } from "./entities/User";
 import { Rooms } from "./entities/Rooms";
-import { UsersID } from "./entities/UsersID";
 import { UserResolver } from "./resolvers/UserResolver";
 import { PostResolver } from "./resolvers/PostResolver";
-import { RoomResolver, UsersIdresolver } from "./resolvers/RoomsResolver";
+import { RoomResolver } from "./resolvers/RoomsResolver";
 import { __prod__ } from "./constants";
 import { rateLimiter } from "./middlewares/ratelimiter";
 import { lypdCookie } from "./cookies/lypd";
@@ -24,26 +24,22 @@ import { myUrl } from "./middlewares/cors";
 import { redis } from "./redis/redis";
 import path from "path";
 import { Reply } from "./entities/Reply";
-import { ReplyResolver } from "./resolvers/ReplyResolver";
+import { Members } from "./entities/Members";
+import { pusher } from "./Pusher/pusher";
 
 const main = async () => {
     await dotenv.config();
     const conn = await createConnection({
         type:
-            process.env.DATABASE_TYPE.type === "postgres"
-                ? "postgres"
-                : "postgres",
-        host: process.env.DATABASE_HOST,
-        port: parseInt(process.env.DATABASE_PORT),
-        username: process.env.DATABASE_USER,
+            process.env.DATABASE_TYPE === "postgres" ? "postgres" : "postgres",
+        url: process.env.DATABASE_URL,
         password: process.env.DATABASE_PASSWORD,
-        database: process.env.DATABASE_NAME,
         migrations: [path.join(__dirname, "./migrations/*")],
         logging: process.env.DATABASE_LOG === "true" ? true : false,
         synchronize: process.env.DATABASE_SYNC === "true" ? true : false,
-        entities: [Post, User, Rooms, UsersID, Reply],
+        entities: [Post, User, Rooms, Members, Reply],
     });
-
+    //await conn.runMigrations();
     const app = express();
 
     //Redis Connection initialization and setup of configuration
@@ -70,37 +66,32 @@ const main = async () => {
     //intialization of cookies as well
 
     //http server
-    const httpServer = await http.createServer(app);
+    const httpServer = http.createServer(app);
 
-    const port: string = await process.env.NODE_PORT;
+    const port: string = process.env.NODE_PORT;
 
     //Starting the apollo server with my user and post reslovers
     const apolloServer: ApolloServer = await new ApolloServer({
         schema: await buildSchema({
-            resolvers: [
-                PostResolver,
-                UserResolver,
-                RoomResolver,
-                UsersIdresolver,
-                ReplyResolver,
-            ],
+            resolvers: [PostResolver, UserResolver, RoomResolver],
             validate: false,
+            pubSub: pusher,
         }),
         subscriptions: {
             path: "/subscriptions",
         },
         context: ({ req, res }) => ({ req, res, redis }),
     });
-    await apolloServer.applyMiddleware({ app, cors: false });
-    await apolloServer.installSubscriptionHandlers(httpServer);
+    apolloServer.applyMiddleware({ app, cors: false });
+    apolloServer.installSubscriptionHandlers(httpServer);
 
-    await httpServer.listen(port, () => {
+    httpServer.listen(port, () => {
         console.log(
             `🚀 Server ready at http://localhost:${port}${apolloServer.graphqlPath}`
         );
-        //console.log(
-        //    `🚀 Subscriptions ready at ws://localhost:${port}${apolloServer.subscriptionsPath}`
-        //);
+        console.log(
+            `🚀 Subscriptions ready at ws://localhost:${port}${apolloServer.subscriptionsPath}`
+        );
     });
 };
 

@@ -1,13 +1,14 @@
 import React from "react";
 
 import "./App.css";
-import Login from "./Components/Login";
+import Login from "./pages/Pages/Login";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import Home from "./Components/Home";
-import { Contact } from "./Components/Contact";
-import { ForgotPassword } from "./Components/forgotpassword";
-import { ChangePassword } from "./Components/ChangePassword";
-interface AppProps {}
+import Home from "./pages/Pages/Home";
+import { Contact } from "./pages/Pages/Contact";
+import { ForgotPassword } from "./pages/Pages/forgotpassword";
+import { ChangePassword } from "./pages/Pages/ChangePassword";
+
+interface AppProps { }
 
 export const App: React.FC<AppProps> = () => {
     return (
@@ -20,6 +21,7 @@ export const App: React.FC<AppProps> = () => {
                         path="/change-password/:tokenId"
                         component={ChangePassword}
                     ></Route>
+                    <Route path="/rooms/:roomId" component={Home}></Route>
                     <Route
                         path="/forgotpassword"
                         component={ForgotPassword}
@@ -27,7 +29,7 @@ export const App: React.FC<AppProps> = () => {
                     <Route path="/" component={Home}></Route>
                 </Switch>
             </Router>
-        </div>
+        </div >
     );
 };
 export default App;

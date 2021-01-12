@@ -1,0 +1,15 @@
+query getrooms($limit: Int!) {
+    getRoom(limit: $limit) {
+        rooms {
+            room {
+                ...RegularRooms
+            }
+        }
+        errors {
+            ...RegularError
+        }
+        success {
+            ...RegularSuccess
+        }
+    }
+}

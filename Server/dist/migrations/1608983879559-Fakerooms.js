@@ -120,7 +120,7 @@ class Fakerooms1608983879559 {
         `);
         });
     }
-    down(queryRunner) {
+    down() {
         return __awaiter(this, void 0, void 0, function* () { });
     }
 }

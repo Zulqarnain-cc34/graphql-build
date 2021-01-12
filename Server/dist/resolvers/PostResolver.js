@@ -26,21 +26,27 @@ const Post_1 = require("./../entities/Post");
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const isAuth_1 = require("../middlewares/isAuth");
+const isRooms_1 = require("../middlewares/isRooms");
+const PostObject_1 = require("./Objecttypes/PostObject");
+const Topics_1 = require("../Topics");
 let PostResolver = class PostResolver {
+    Postadded(roomId, payload) {
+        return payload;
+    }
     post(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return Post_1.Post.findOne(id);
         });
     }
-    posts(limit, cursor) {
+    posts(limit, roomId) {
         return __awaiter(this, void 0, void 0, function* () {
             const reallimit = Math.min(50, limit);
             const replacements = [];
             replacements.push(reallimit);
-            if (cursor) {
-                replacements.push(new Date(parseInt(cursor)));
-            }
-            const posts = yield typeorm_1.getConnection().query(`
+            replacements.push(roomId);
+            let posts;
+            try {
+                posts = yield typeorm_1.getConnection().query(`
             select p.*,
             json_build_object(
                 'id', u.id,
@@ -51,16 +57,29 @@ let PostResolver = class PostResolver {
                 ) creator
             from post p
             inner join public.user u on u.id=p.creatorid
-            ${cursor ? `where p."createdAt"< $2` : ""}
-            order by "createdAt" DESC
+            where p."roomId"=$2
+            order by "createdAt" ASC
             limit $1
         `, replacements);
-            return posts;
+            }
+            catch (err) {
+                return { errors: [{ field: "posts", message: err.detail }] };
+            }
+            return {
+                posts,
+                success: [{ field: "posts", message: "Successfully queryed" }],
+            };
         });
     }
-    createpost(message, { req }) {
+    createpost(message, roomId, pubSub, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!roomId) {
+                return {
+                    errors: [{ field: "Room", message: "Room id is required" }],
+                };
+            }
             let post;
+            let ids;
             try {
                 const result = yield typeorm_1.getConnection()
                     .createQueryBuilder()
@@ -69,15 +88,41 @@ let PostResolver = class PostResolver {
                     .values({
                     message: message,
                     creatorid: req.session.userId,
+                    roomId: roomId,
                 })
                     .returning("*")
                     .execute();
-                post = result.raw[0];
+                ids = result.raw[0].id;
+                const newpost = yield typeorm_1.getConnection().query(`
+            select p.*,
+            json_build_object(
+                'id', u.id,
+                'createdAt', u."createdAt",
+                'updatedAt', u."updatedAt",
+                'username', u.username,
+                'email', u.email
+                ) creator
+            from post p
+            inner join public.user u on u.id=p.creatorid
+            where p.id=$1
+            `, [ids]);
+                post = newpost[0];
             }
             catch (err) {
-                console.log(err);
+                return {
+                    errors: [
+                        { field: "PostError", message: "unable to create post" },
+                    ],
+                };
             }
-            return post;
+            yield pubSub.publish(Topics_1.Topic.NewPost, {
+                post,
+                success: [{ field: "Post", message: "Successfully Found posts" }],
+            });
+            return {
+                post,
+                success: [{ field: "Post", message: "Successfully Found posts" }],
+            };
         });
     }
     updatepost(id, message) {
@@ -100,6 +145,17 @@ let PostResolver = class PostResolver {
     }
 };
 __decorate([
+    type_graphql_1.Subscription(() => PostObject_1.PostResponse, {
+        topics: Topics_1.Topic.NewPost,
+        filter: ({ payload, args, }) => payload.post.id === args.roomId,
+    }),
+    __param(0, type_graphql_1.Arg("roomId", () => type_graphql_1.Int)),
+    __param(1, type_graphql_1.Root()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, PostObject_1.PostResponse]),
+    __metadata("design:returntype", PostObject_1.PostResponse)
+], PostResolver.prototype, "Postadded", null);
+__decorate([
     type_graphql_1.Query(() => Post_1.Post, { nullable: true }),
     __param(0, type_graphql_1.Arg("id", () => type_graphql_1.Int)),
     __metadata("design:type", Function),
@@ -107,20 +163,23 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "post", null);
 __decorate([
-    type_graphql_1.Query(() => [Post_1.Post]),
+    type_graphql_1.Query(() => PostObject_1.PostsResponse),
+    type_graphql_1.UseMiddleware(isAuth_1.isAuth, isRooms_1.isRooms),
     __param(0, type_graphql_1.Arg("limit", () => type_graphql_1.Int)),
-    __param(1, type_graphql_1.Arg("cursor", () => String, { nullable: true })),
+    __param(1, type_graphql_1.Arg("roomId", () => type_graphql_1.Int)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", [Number, Number]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "posts", null);
 __decorate([
-    type_graphql_1.Mutation(() => Post_1.Post),
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
+    type_graphql_1.Mutation(() => PostObject_1.PostResponse),
+    type_graphql_1.UseMiddleware(isAuth_1.isAuth, isRooms_1.isRooms),
     __param(0, type_graphql_1.Arg("message", () => String)),
-    __param(1, type_graphql_1.Ctx()),
+    __param(1, type_graphql_1.Arg("roomId", () => type_graphql_1.Int)),
+    __param(2, type_graphql_1.PubSub()),
+    __param(3, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, Number, type_graphql_1.PubSubEngine, Object]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "createpost", null);
 __decorate([

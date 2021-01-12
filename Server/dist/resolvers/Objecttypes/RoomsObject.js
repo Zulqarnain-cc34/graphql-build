@@ -9,28 +9,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RoomResponse = exports.RoomsResponse = exports.boolRoomResponse = void 0;
+exports.RoomResponse = exports.RoomsResponse = void 0;
 const Rooms_1 = require("../../entities/Rooms");
 const type_graphql_1 = require("type-graphql");
 const FieldError_1 = require("./matchingtypes/FieldError");
-let boolRoomResponse = class boolRoomResponse {
-};
-__decorate([
-    type_graphql_1.Field(() => [FieldError_1.Success], { nullable: true }),
-    __metadata("design:type", Array)
-], boolRoomResponse.prototype, "success", void 0);
-__decorate([
-    type_graphql_1.Field(() => Boolean, { nullable: true }),
-    __metadata("design:type", Boolean)
-], boolRoomResponse.prototype, "updated", void 0);
-__decorate([
-    type_graphql_1.Field(() => [FieldError_1.FieldError], { nullable: true }),
-    __metadata("design:type", Array)
-], boolRoomResponse.prototype, "errors", void 0);
-boolRoomResponse = __decorate([
-    type_graphql_1.ObjectType()
-], boolRoomResponse);
-exports.boolRoomResponse = boolRoomResponse;
 let RoomsResponse = class RoomsResponse {
 };
 __decorate([

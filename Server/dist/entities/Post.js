@@ -42,7 +42,7 @@ __decorate([
     __metadata("design:type", User_1.User)
 ], Post.prototype, "creator", void 0);
 __decorate([
-    typeorm_1.OneToMany(() => Reply_1.Reply, (reply) => reply.post),
+    typeorm_1.OneToMany(() => Reply_1.Reply, (reply) => reply.posts),
     __metadata("design:type", Array)
 ], Post.prototype, "replies", void 0);
 __decorate([
@@ -50,6 +50,16 @@ __decorate([
     typeorm_1.Column({ type: "int", default: 0 }),
     __metadata("design:type", Number)
 ], Post.prototype, "comments", void 0);
+__decorate([
+    type_graphql_1.Field(() => type_graphql_1.ID),
+    typeorm_1.Column(),
+    __metadata("design:type", Number)
+], Post.prototype, "roomId", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    typeorm_1.Column({ type: "int", default: 0 }),
+    __metadata("design:type", Number)
+], Post.prototype, "likes", void 0);
 __decorate([
     type_graphql_1.Field(() => String),
     typeorm_1.Column(),

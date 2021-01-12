@@ -25,7 +25,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserResolver = void 0;
-const ReplyObjectTypes_1 = require("./Objecttypes/ReplyObjectTypes");
 const constants_1 = require("./../constants");
 const User_1 = require("../entities/User");
 const type_graphql_1 = require("type-graphql");
@@ -35,8 +34,8 @@ const constants_2 = require("../constants");
 const uuid_1 = require("uuid");
 const sendEmail_1 = require("../utils/sendEmail");
 const UserObject_1 = require("./Objecttypes/UserObject");
-const Reply_1 = require("../entities/Reply");
 const isAuth_1 = require("../middlewares/isAuth");
+const Reply_1 = require("../entities/Reply");
 let UserResolver = class UserResolver {
     Users({}) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -48,23 +47,7 @@ let UserResolver = class UserResolver {
             if (!req.session.userId) {
                 return undefined;
             }
-            const user = yield typeorm_1.getConnection().query(`
-
-            select u.email,
-                json_build_object(
-                    'id',r.id,
-                    'Roomname',r."Roomname",
-                    'updatedAt', r."updatedAt",
-                    'createdAt', r."createdAt",
-                    'adminId', r."adminId"
-                ) room
-            from
-                public.user u
-            inner join
-                    rooms r on r."adminId" = u.id
-        `);
-            console.log(user);
-            return user;
+            return User_1.User.findOne({ where: { id: req.session.userId } });
         });
     }
     register(username, email, password, { req }) {
@@ -272,37 +255,75 @@ let UserResolver = class UserResolver {
             return { user };
         });
     }
-    createComment(postId, text, { req }) {
+    hitlike(postId, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { userId } = req.session;
-            let reply;
+            let inserted;
+            let updated;
             try {
-                reply = yield Reply_1.Reply.create({ userId, postId, text }).save();
-                console.log(reply);
+                inserted = yield typeorm_1.getConnection().query(`
+                insert into reply ("postId", "userId",liked) values ($1, $2,true)
+                `, [postId, req.session.userId]);
+                console.log(inserted);
             }
-            catch (error) {
-                if (error.code === "23505") {
-                    return { errors: [{ field: "Error", message: error.detail }] };
+            catch (err) {
+                if (err) {
+                    console.log(err);
+                    return false;
                 }
             }
             try {
-                yield typeorm_1.getConnection().query(`
-                update post
-                set comments=comments+1
-                where id=$1
-            `, [postId]);
+                updated = yield typeorm_1.getConnection().query(`
+            update post
+            set likes=likes+1
+            where id=$1
+        `, [postId]);
+                console.log(updated);
             }
-            catch (error) {
-                if (error.code === "23505") {
-                    return {
-                        errors: [{ field: "Error", message: error.detail }],
-                    };
+            catch (err) {
+                if (err) {
+                    console.log(err);
+                    return false;
                 }
             }
-            return {
-                replies: reply,
-                success: [{ field: "Reply", message: "Succesfully created reply" }],
-            };
+            return true;
+        });
+    }
+    removelike(postId, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let deleted;
+            let updated;
+            try {
+                deleted = yield typeorm_1.getConnection().query(`
+                delete from reply where "postId"=$1 and "userId"=$2
+                `, [postId, req.session.userId]);
+                console.log(deleted);
+            }
+            catch (err) {
+                if (err) {
+                    console.log(err);
+                    return false;
+                }
+            }
+            try {
+                updated = yield typeorm_1.getConnection().query(`
+            update post
+            set likes=likes-1
+            where id=$1
+        `, [postId]);
+                console.log(updated);
+            }
+            catch (err) {
+                if (err) {
+                    console.log(err);
+                    return false;
+                }
+            }
+            return true;
+        });
+    }
+    replies() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield Reply_1.Reply.find({});
         });
     }
 };
@@ -314,7 +335,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "Users", null);
 __decorate([
-    type_graphql_1.Query(() => User_1.User),
+    type_graphql_1.Query(() => User_1.User, { nullable: true }),
     __param(0, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -364,15 +385,29 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "changePassword", null);
 __decorate([
-    type_graphql_1.Mutation(() => ReplyObjectTypes_1.ReplyResponse),
+    type_graphql_1.Mutation(() => Boolean),
     type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    __param(0, type_graphql_1.Arg("postId", () => type_graphql_1.Int)),
-    __param(1, type_graphql_1.Arg("text", () => String)),
-    __param(2, type_graphql_1.Ctx()),
+    __param(0, type_graphql_1.Arg("postid", () => type_graphql_1.Int)),
+    __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String, Object]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
-], UserResolver.prototype, "createComment", null);
+], UserResolver.prototype, "hitlike", null);
+__decorate([
+    type_graphql_1.Mutation(() => Boolean),
+    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
+    __param(0, type_graphql_1.Arg("postid", () => type_graphql_1.Int)),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "removelike", null);
+__decorate([
+    type_graphql_1.Query(() => [Reply_1.Reply]),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "replies", null);
 UserResolver = __decorate([
     type_graphql_1.Resolver()
 ], UserResolver);

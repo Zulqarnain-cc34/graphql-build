@@ -38,24 +38,6 @@ let ReplyResolver = class ReplyResolver {
             });
         });
     }
-    hitlike(liked, postId, id, { req }) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let updatedResult;
-            try {
-                updatedResult = yield Reply_1.Reply.update({ id: id, userId: req.session.userId, postId: postId }, { liked: !liked });
-            }
-            catch (err) {
-                if (err) {
-                    console.log(err);
-                    return false;
-                }
-            }
-            if ((updatedResult === null || updatedResult === void 0 ? void 0 : updatedResult.affected) === 0) {
-                throw new Error("updating likes unsuccessful");
-            }
-            return true;
-        });
-    }
 };
 __decorate([
     type_graphql_1.Query(() => [Reply_1.Reply]),
@@ -72,17 +54,6 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], ReplyResolver.prototype, "getReply", null);
-__decorate([
-    type_graphql_1.Mutation(() => Boolean),
-    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
-    __param(0, type_graphql_1.Arg("liked", () => Boolean)),
-    __param(1, type_graphql_1.Arg("postid", () => type_graphql_1.Int)),
-    __param(2, type_graphql_1.Arg("id", () => String)),
-    __param(3, type_graphql_1.Ctx()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Boolean, Number, Object, Object]),
-    __metadata("design:returntype", Promise)
-], ReplyResolver.prototype, "hitlike", null);
 ReplyResolver = __decorate([
     type_graphql_1.Resolver()
 ], ReplyResolver);
