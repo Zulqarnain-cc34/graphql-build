@@ -22,7 +22,8 @@ export const Message: React.FC<MessageProps> = ({
             <div className="message-content">
                 <h3>{username}</h3>
                 <p>{message}</p>
-                {<h4>{createdAt.split("T")[1]}</h4>}
+                <div className="message-content-dateTime"> {<h4>{createdAt.split("T")[1]}</h4>}</div>
+
             </div>
         </div>
     );

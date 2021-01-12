@@ -25,10 +25,11 @@ import { redis } from "./redis/redis";
 import path from "path";
 import { Reply } from "./entities/Reply";
 import { Members } from "./entities/Members";
+import { pusher } from "./Pusher/pusher";
 
 const main = async () => {
     await dotenv.config();
-    await createConnection({
+    const conn = await createConnection({
         type:
             process.env.DATABASE_TYPE === "postgres" ? "postgres" : "postgres",
         url: process.env.DATABASE_URL,
@@ -38,7 +39,7 @@ const main = async () => {
         synchronize: process.env.DATABASE_SYNC === "true" ? true : false,
         entities: [Post, User, Rooms, Members, Reply],
     });
-
+    //await conn.runMigrations();
     const app = express();
 
     //Redis Connection initialization and setup of configuration
@@ -65,31 +66,32 @@ const main = async () => {
     //intialization of cookies as well
 
     //http server
-    const httpServer = await http.createServer(app);
+    const httpServer = http.createServer(app);
 
-    const port: string = await process.env.NODE_PORT;
+    const port: string = process.env.NODE_PORT;
 
     //Starting the apollo server with my user and post reslovers
     const apolloServer: ApolloServer = await new ApolloServer({
         schema: await buildSchema({
             resolvers: [PostResolver, UserResolver, RoomResolver],
             validate: false,
+            pubSub: pusher,
         }),
         subscriptions: {
             path: "/subscriptions",
         },
         context: ({ req, res }) => ({ req, res, redis }),
     });
-    await apolloServer.applyMiddleware({ app, cors: false });
-    await apolloServer.installSubscriptionHandlers(httpServer);
+    apolloServer.applyMiddleware({ app, cors: false });
+    apolloServer.installSubscriptionHandlers(httpServer);
 
-    await httpServer.listen(port, () => {
+    httpServer.listen(port, () => {
         console.log(
             `🚀 Server ready at http://localhost:${port}${apolloServer.graphqlPath}`
         );
-        //console.log(
-        //    `🚀 Subscriptions ready at ws://localhost:${port}${apolloServer.subscriptionsPath}`
-        //);
+        console.log(
+            `🚀 Subscriptions ready at ws://localhost:${port}${apolloServer.subscriptionsPath}`
+        );
     });
 };
 

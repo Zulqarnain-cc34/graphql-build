@@ -10,9 +10,9 @@
 }
 
 .fieldmembers>h2 {
-    font-size: 11px;
-    font-weight: 450;
-    color: rgba(219, 219, 219, 0.945);
+    font-size: 1rem;
+    font-weight: 410;
+    color: rgba(0, 0, 0, 0.781);
     margin-left: 12px;
 }
 
@@ -22,7 +22,8 @@
     border-radius: 50% !important;
 }
 
-.fieldmembers :hover {
+.fieldmembers:hover {
+    background-color: var(--interactive-hover);
     /*color: rgba(219, 219, 219, 0);*/
-    background-color: #00ff00cc;
+    /*background-color: #00ff00cc;*/
 }

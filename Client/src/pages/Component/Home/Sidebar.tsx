@@ -4,20 +4,23 @@ import {
     faChalkboardTeacher,
     faComment,
     faCouch,
+    faHeadphones,
     faHockeyPuck,
+    faCog,
     faSearch,
     faStream,
     faWaveSquare,
+    faMicrophoneAltSlash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar } from "@material-ui/core";
 import "../../../styles/Components/Home/sidebar.css";
 import { Field } from "./Field";
 import Slack from "../../../icons/slack.svg";
-import Mic from "../../../icons/mute-microphone.svg";
+//import Mic from "../../../icons/mute-microphone.svg";
 import Bell from "../../../icons/bell-stationary.svg";
-import Headphones from "../../../icons/headphones-snow.svg";
-import Gear from "../../../icons/settings.svg";
+//import Headphones from "../../../icons/headphones-snow.svg";
+//import Gear from "../../../icons/settings.svg";
 import styled from "styled-components";
 import { Icon } from "./Icon";
 import { useStateValue } from "../../../context/stateProvider";
@@ -141,9 +144,9 @@ export const Sidebar: React.FC<SidebarProps> = () => {
                         <p>#3985</p>
                     </div>
                     <div className="sidebar-groups-user-icons">
-                        <Icon type="img" src={Mic} />
-                        <Icon type="img" src={Headphones} />
-                        <Icon type="img" src={Gear} />
+                        <Icon type="fonticon" icon={faMicrophoneAltSlash} />
+                        <Icon type="fonticon" icon={faHeadphones} />
+                        <Icon type="fonticon" icon={faCog} />
                     </div>
                 </div>
             </div>

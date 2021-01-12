@@ -30,7 +30,13 @@ const User_1 = require("../entities/User");
 const RoomsObject_1 = require("./Objecttypes/RoomsObject");
 const MembersObject_1 = require("./Objecttypes/MembersObject");
 const UpdatedResponse_1 = require("./Objecttypes/matchingtypes/UpdatedResponse");
+const Topics_1 = require("../Topics");
+const Post_1 = require("../entities/Post");
 let RoomResolver = class RoomResolver {
+    getRoomPost(roomId, payload) {
+        console.log(roomId);
+        return payload;
+    }
     Rooms() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield Rooms_1.Rooms.find({});
@@ -324,6 +330,17 @@ let RoomResolver = class RoomResolver {
         });
     }
 };
+__decorate([
+    type_graphql_1.Subscription(() => [Post_1.Post], {
+        topics: Topics_1.Topic.GET_ROOM_MESSAGES,
+        filter: ({ payload, args }) => payload.roomId === args.roomId,
+    }),
+    __param(0, type_graphql_1.Arg("roomId")),
+    __param(1, type_graphql_1.Root()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], RoomResolver.prototype, "getRoomPost", null);
 __decorate([
     type_graphql_1.Query(() => [Rooms_1.Rooms]),
     __metadata("design:type", Function),

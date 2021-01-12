@@ -25,3 +25,7 @@ export class RoomResponse {
     @Field(() => [FieldError], { nullable: true })
     errors?: FieldError[];
 }
+
+export interface roomOptions {
+    roomId: number;
+}

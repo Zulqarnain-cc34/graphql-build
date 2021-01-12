@@ -9,14 +9,25 @@ import {
     createClient,
     dedupExchange,
     fetchExchange,
-    ssrExchange,
+    subscriptionExchange,
 } from "urql";
 import { cacheExchange } from "@urql/exchange-graphcache";
 import { cacheUpdates } from "./cache";
 import { StateProvider } from "./context/stateProvider";
+//import { createClient as createWSClient } from 'graphql-ws';
+import { SubscriptionClient } from 'subscriptions-transport-ws';
 
-const serverSideRendering = async () => {
-    const ssr = ssrExchange({ isClient: false });
+
+
+
+const Appserver = async () => {
+    //const wsClient = new SubscriptionClient({
+    //    url: 'ws://localhost:4000/graphql',{
+
+    //    }
+    //});
+    const subscriptionClient = new SubscriptionClient('ws://localhost:4000/graphql', { reconnect: true });
+
     const client = createClient({
         url: "http://localhost:4000/graphql",
         fetchOptions: {
@@ -25,7 +36,11 @@ const serverSideRendering = async () => {
         exchanges: [
             dedupExchange,
             cacheExchange(cacheUpdates),
-            ssr,
+            subscriptionExchange({
+                forwardSubscription(operation) {
+                    return subscriptionClient.request(operation);
+                },
+            }),
             fetchExchange,
         ],
     });
@@ -46,4 +61,4 @@ const serverSideRendering = async () => {
     // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
     reportWebVitals();
 };
-serverSideRendering();
+Appserver();

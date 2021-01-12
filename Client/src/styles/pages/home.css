@@ -6,11 +6,13 @@
 }
 
 :root {
-    --grey-light: #2f3136;
-    --grey-bg: #36393f;
-    --grey-dark: #2f3136;
-    --grey-interactive: #2d2f33;
+    --grey-light: #ececec;
+    --grey-bg: #f8f9fd;
+    --grey-dark: #dfdfdf;
+    --grey-interactive: #f7f7f7;
     --grey-border: #a0a0a0;
+    --interactive-hover: #dad8d8;
+    --grey-medium: #dadada;
 }
 
 

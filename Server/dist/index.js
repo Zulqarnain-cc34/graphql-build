@@ -35,9 +35,10 @@ const redis_1 = require("./redis/redis");
 const path_1 = __importDefault(require("path"));
 const Reply_1 = require("./entities/Reply");
 const Members_1 = require("./entities/Members");
+const pusher_1 = require("./Pusher/pusher");
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     yield dotenv_1.default.config();
-    yield typeorm_1.createConnection({
+    const conn = yield typeorm_1.createConnection({
         type: process.env.DATABASE_TYPE === "postgres" ? "postgres" : "postgres",
         url: process.env.DATABASE_URL,
         password: process.env.DATABASE_PASSWORD,
@@ -55,22 +56,24 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     yield app.use(helmet_1.default({
         contentSecurityPolicy: process.env.NODE_ENV === "production" ? undefined : false,
     }));
-    const httpServer = yield http_1.default.createServer(app);
-    const port = yield process.env.NODE_PORT;
+    const httpServer = http_1.default.createServer(app);
+    const port = process.env.NODE_PORT;
     const apolloServer = yield new apollo_server_express_1.ApolloServer({
         schema: yield type_graphql_1.buildSchema({
             resolvers: [PostResolver_1.PostResolver, UserResolver_1.UserResolver, RoomsResolver_1.RoomResolver],
             validate: false,
+            pubSub: pusher_1.pusher,
         }),
         subscriptions: {
             path: "/subscriptions",
         },
         context: ({ req, res }) => ({ req, res, redis: redis_1.redis }),
     });
-    yield apolloServer.applyMiddleware({ app, cors: false });
-    yield apolloServer.installSubscriptionHandlers(httpServer);
-    yield httpServer.listen(port, () => {
+    apolloServer.applyMiddleware({ app, cors: false });
+    apolloServer.installSubscriptionHandlers(httpServer);
+    httpServer.listen(port, () => {
         console.log(`🚀 Server ready at http://localhost:${port}${apolloServer.graphqlPath}`);
+        console.log(`🚀 Subscriptions ready at ws://localhost:${port}${apolloServer.subscriptionsPath}`);
     });
 });
 main().catch((err) => console.log(err));

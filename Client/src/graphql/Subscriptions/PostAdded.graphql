@@ -1,7 +1,7 @@
-mutation createpost($message: String!, $roomId: Int!) {
-    createpost(roomId: $roomId, message: $message) {
+subscription getNewPost($roomId: Int!) {
+    Postadded(roomId: $roomId) {
         post {
-            ...RegularPost
+            ...RegularPosts
         }
         errors {
             ...RegularError

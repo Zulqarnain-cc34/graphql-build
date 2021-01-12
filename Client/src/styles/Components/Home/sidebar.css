@@ -11,9 +11,12 @@
     flex-direction: column;
     flex: 0.25;
     padding: 25px 6px;
-    background-color: var(--grey-dark);
+    border-radius: 0px 14px 14px 0px;
+    /*background-color: var(--grey-dark);*/
+    background-color: #0b61ff;
     justify-content: space-between;
     align-items: center;
+    color: black;
 }
 
 .sidebar-groups-hr {
@@ -34,7 +37,7 @@
     display: flex;
     align-items: center;
     width: 100%;
-    background-color: #27292c;
+    background-color: var(--grey-medium);
     justify-content: space-around;
     flex: 0.1;
     /*min-width: 130px;*/
@@ -52,7 +55,7 @@
 .sidebar-groups-user-content {
     display: flex;
     flex-direction: column;
-    color: #fff;
+    color: rgb(0, 0, 0);
     /*align-items: center;*/
     justify-content: center;
     /*align-items: center;*/
@@ -90,6 +93,7 @@
 .sidebar-groups-user-icons {
     display: flex;
     align-items: center;
+    color: rgb(4, 0, 253) !important;
 }
 
 .sidebar-groups-bottom:nth-last-child() {
@@ -119,7 +123,7 @@
     width: 100%;
     /*height: 3rem;*/
     align-items: center;
-    background-color: #202225;
+    background-color: var(--grey-interactive);
     border-radius: 10px;
     padding: 5px 10px;
     margin-top: 3px;
@@ -172,18 +176,18 @@
 }
 
 .sidebar-options-user-avatar {
-    color: rgb(102, 102, 102) !important;
+    color: #3757c2 !important;
 }
 
 .sidebar-options-icons {
     width: 24px !important;
     height: 24px !important;
-    color: #999999 !important;
+    color: #45e3ee !important;
     cursor: pointer !important;
 }
 
 .sidebar-options-icons :hover {
-    color: rgba(219, 219, 219, 0.918);
+    color: rgb(14, 181, 247);
 }
 
 .createroom {

@@ -24,11 +24,11 @@
     font-size: 1.2rem;
     line-height: 18px;
     font-weight: 500;
-    color: #b6b6b6;
+    color: black;
 }
 
 .field-info:hover h2 {
-    color: #ffffff;
+    color: rgb(46, 46, 46);
 }
 
 .selected {

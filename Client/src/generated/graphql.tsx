@@ -239,18 +239,67 @@ export type RoomResponse = {
   errors?: Maybe<Array<FieldError>>;
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  Postadded: PostResponse;
+  getRoomPost: Array<Post>;
+};
+
+
+export type SubscriptionPostaddedArgs = {
+  roomId: Scalars['Int'];
+};
+
+
+export type SubscriptionGetRoomPostArgs = {
+  roomId: Scalars['Float'];
+};
+
+export type GetNewPostSubscriptionVariables = Exact<{
+  roomId: Scalars['Int'];
+}>;
+
+
+export type GetNewPostSubscription = (
+  { __typename?: 'Subscription' }
+  & {
+    Postadded: (
+      { __typename?: 'PostResponse' }
+      & {
+        post?: Maybe<(
+          { __typename?: 'Post' }
+          & RegularPostsFragment
+        )>, errors?: Maybe<Array<(
+          { __typename?: 'FieldError' }
+          & RegularErrorFragment
+        )>>, success?: Maybe<Array<(
+          { __typename?: 'Success' }
+          & RegularSuccessFragment
+        )>>
+      }
+    )
+  }
+);
+
 export type RegularErrorFragment = (
   { __typename?: 'FieldError' }
   & Pick<FieldError, 'field' | 'message'>
 );
 
+export type RegularPostFragment = (
+  { __typename?: 'Post' }
+  & Pick<Post, 'id' | 'createdAt' | 'updatedAt' | 'creatorid' | 'message'>
+);
+
 export type RegularPostsFragment = (
   { __typename?: 'Post' }
   & Pick<Post, 'id' | 'createdAt' | 'updatedAt' | 'creatorid' | 'message'>
-  & { creator: (
-    { __typename?: 'User' }
-    & RegularUserFragment
-  ) }
+  & {
+    creator: (
+      { __typename?: 'User' }
+      & RegularUserFragment
+    )
+  }
 );
 
 export type RegularRoomsFragment = (
@@ -276,16 +325,20 @@ export type ChangePasswordMutationVariables = Exact<{
 
 export type ChangePasswordMutation = (
   { __typename?: 'Mutation' }
-  & { changePassword: (
-    { __typename?: 'UserResponse' }
-    & { user?: Maybe<(
-      { __typename?: 'User' }
-      & RegularUserFragment
-    )>, errors?: Maybe<Array<(
-      { __typename?: 'FieldError' }
-      & Pick<FieldError, 'field' | 'message'>
-    )>> }
-  ) }
+  & {
+    changePassword: (
+      { __typename?: 'UserResponse' }
+      & {
+        user?: Maybe<(
+          { __typename?: 'User' }
+          & RegularUserFragment
+        )>, errors?: Maybe<Array<(
+          { __typename?: 'FieldError' }
+          & Pick<FieldError, 'field' | 'message'>
+        )>>
+      }
+    )
+  }
 );
 
 export type CreateRoomMutationVariables = Exact<{
@@ -295,19 +348,23 @@ export type CreateRoomMutationVariables = Exact<{
 
 export type CreateRoomMutation = (
   { __typename?: 'Mutation' }
-  & { createRoom: (
-    { __typename?: 'RoomResponse' }
-    & { rooms?: Maybe<(
-      { __typename?: 'Rooms' }
-      & RegularRoomsFragment
-    )>, errors?: Maybe<Array<(
-      { __typename?: 'FieldError' }
-      & RegularErrorFragment
-    )>>, success?: Maybe<Array<(
-      { __typename?: 'Success' }
-      & RegularSuccessFragment
-    )>> }
-  ) }
+  & {
+    createRoom: (
+      { __typename?: 'RoomResponse' }
+      & {
+        rooms?: Maybe<(
+          { __typename?: 'Rooms' }
+          & RegularRoomsFragment
+        )>, errors?: Maybe<Array<(
+          { __typename?: 'FieldError' }
+          & RegularErrorFragment
+        )>>, success?: Maybe<Array<(
+          { __typename?: 'Success' }
+          & RegularSuccessFragment
+        )>>
+      }
+    )
+  }
 );
 
 export type CreatepostMutationVariables = Exact<{
@@ -318,19 +375,23 @@ export type CreatepostMutationVariables = Exact<{
 
 export type CreatepostMutation = (
   { __typename?: 'Mutation' }
-  & { createpost: (
-    { __typename?: 'PostResponse' }
-    & { post?: Maybe<(
-      { __typename?: 'Post' }
-      & RegularPostsFragment
-    )>, errors?: Maybe<Array<(
-      { __typename?: 'FieldError' }
-      & RegularErrorFragment
-    )>>, success?: Maybe<Array<(
-      { __typename?: 'Success' }
-      & RegularSuccessFragment
-    )>> }
-  ) }
+  & {
+    createpost: (
+      { __typename?: 'PostResponse' }
+      & {
+        post?: Maybe<(
+          { __typename?: 'Post' }
+          & RegularPostFragment
+        )>, errors?: Maybe<Array<(
+          { __typename?: 'FieldError' }
+          & RegularErrorFragment
+        )>>, success?: Maybe<Array<(
+          { __typename?: 'Success' }
+          & RegularSuccessFragment
+        )>>
+      }
+    )
+  }
 );
 
 export type ForgotpasswordMutationVariables = Exact<{
@@ -350,14 +411,18 @@ export type JoinroomMutationVariables = Exact<{
 
 export type JoinroomMutation = (
   { __typename?: 'Mutation' }
-  & { joinRoom: (
-    { __typename?: 'boolResponse' }
-    & Pick<BoolResponse, 'updated'>
-    & { errors?: Maybe<Array<(
-      { __typename?: 'FieldError' }
-      & Pick<FieldError, 'field' | 'message'>
-    )>> }
-  ) }
+  & {
+    joinRoom: (
+      { __typename?: 'boolResponse' }
+      & Pick<BoolResponse, 'updated'>
+      & {
+        errors?: Maybe<Array<(
+          { __typename?: 'FieldError' }
+          & Pick<FieldError, 'field' | 'message'>
+        )>>
+      }
+    )
+  }
 );
 
 export type LoginMutationVariables = Exact<{
@@ -368,16 +433,20 @@ export type LoginMutationVariables = Exact<{
 
 export type LoginMutation = (
   { __typename?: 'Mutation' }
-  & { login: (
-    { __typename?: 'UserResponse' }
-    & { errors?: Maybe<Array<(
-      { __typename?: 'FieldError' }
-      & Pick<FieldError, 'field' | 'message'>
-    )>>, user?: Maybe<(
-      { __typename?: 'User' }
-      & RegularUserFragment
-    )> }
-  ) }
+  & {
+    login: (
+      { __typename?: 'UserResponse' }
+      & {
+        errors?: Maybe<Array<(
+          { __typename?: 'FieldError' }
+          & Pick<FieldError, 'field' | 'message'>
+        )>>, user?: Maybe<(
+          { __typename?: 'User' }
+          & RegularUserFragment
+        )>
+      }
+    )
+  }
 );
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
@@ -397,16 +466,20 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = (
   { __typename?: 'Mutation' }
-  & { register: (
-    { __typename?: 'UserResponse' }
-    & { user?: Maybe<(
-      { __typename?: 'User' }
-      & RegularUserFragment
-    )>, errors?: Maybe<Array<(
-      { __typename?: 'FieldError' }
-      & Pick<FieldError, 'field' | 'message'>
-    )>> }
-  ) }
+  & {
+    register: (
+      { __typename?: 'UserResponse' }
+      & {
+        user?: Maybe<(
+          { __typename?: 'User' }
+          & RegularUserFragment
+        )>, errors?: Maybe<Array<(
+          { __typename?: 'FieldError' }
+          & Pick<FieldError, 'field' | 'message'>
+        )>>
+      }
+    )
+  }
 );
 
 export type GetpostsQueryVariables = Exact<{
@@ -417,19 +490,23 @@ export type GetpostsQueryVariables = Exact<{
 
 export type GetpostsQuery = (
   { __typename?: 'Query' }
-  & { posts: (
-    { __typename?: 'PostsResponse' }
-    & { posts?: Maybe<Array<(
-      { __typename?: 'Post' }
-      & RegularPostsFragment
-    )>>, errors?: Maybe<Array<(
-      { __typename?: 'FieldError' }
-      & RegularErrorFragment
-    )>>, success?: Maybe<Array<(
-      { __typename?: 'Success' }
-      & RegularSuccessFragment
-    )>> }
-  ) }
+  & {
+    posts: (
+      { __typename?: 'PostsResponse' }
+      & {
+        posts?: Maybe<Array<(
+          { __typename?: 'Post' }
+          & RegularPostsFragment
+        )>>, errors?: Maybe<Array<(
+          { __typename?: 'FieldError' }
+          & RegularErrorFragment
+        )>>, success?: Maybe<Array<(
+          { __typename?: 'Success' }
+          & RegularSuccessFragment
+        )>>
+      }
+    )
+  }
 );
 
 export type GetroomsQueryVariables = Exact<{
@@ -439,22 +516,28 @@ export type GetroomsQueryVariables = Exact<{
 
 export type GetroomsQuery = (
   { __typename?: 'Query' }
-  & { getRoom: (
-    { __typename?: 'MembersResponse' }
-    & { rooms?: Maybe<Array<(
-      { __typename?: 'Members' }
-      & { room?: Maybe<(
-        { __typename?: 'Rooms' }
-        & RegularRoomsFragment
-      )> }
-    )>>, errors?: Maybe<Array<(
-      { __typename?: 'FieldError' }
-      & RegularErrorFragment
-    )>>, success?: Maybe<Array<(
-      { __typename?: 'Success' }
-      & RegularSuccessFragment
-    )>> }
-  ) }
+  & {
+    getRoom: (
+      { __typename?: 'MembersResponse' }
+      & {
+        rooms?: Maybe<Array<(
+          { __typename?: 'Members' }
+          & {
+            room?: Maybe<(
+              { __typename?: 'Rooms' }
+              & RegularRoomsFragment
+            )>
+          }
+        )>>, errors?: Maybe<Array<(
+          { __typename?: 'FieldError' }
+          & RegularErrorFragment
+        )>>, success?: Maybe<Array<(
+          { __typename?: 'Success' }
+          & RegularSuccessFragment
+        )>>
+      }
+    )
+  }
 );
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
@@ -462,15 +545,26 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type MeQuery = (
   { __typename?: 'Query' }
-  & { me?: Maybe<(
-    { __typename?: 'User' }
-    & RegularUserFragment
-  )> }
+  & {
+    me?: Maybe<(
+      { __typename?: 'User' }
+      & RegularUserFragment
+    )>
+  }
 );
 
 export const RegularErrorFragmentDoc = gql`
     fragment RegularError on FieldError {
   field
+  message
+}
+    `;
+export const RegularPostFragmentDoc = gql`
+    fragment RegularPost on Post {
+  id
+  createdAt
+  updatedAt
+  creatorid
   message
 }
     `;
@@ -506,6 +600,27 @@ export const RegularSuccessFragmentDoc = gql`
   message
 }
     `;
+export const GetNewPostDocument = gql`
+    subscription getNewPost($roomId: Int!) {
+  Postadded(roomId: $roomId) {
+    post {
+      ...RegularPosts
+    }
+    errors {
+      ...RegularError
+    }
+    success {
+      ...RegularSuccess
+    }
+  }
+}
+    ${RegularPostsFragmentDoc}
+${RegularErrorFragmentDoc}
+${RegularSuccessFragmentDoc}`;
+
+export function useGetNewPostSubscription<TData = GetNewPostSubscription>(options: Omit<Urql.UseSubscriptionArgs<GetNewPostSubscriptionVariables>, 'query'> = {}, handler?: Urql.SubscriptionHandler<GetNewPostSubscription, TData>) {
+  return Urql.useSubscription<GetNewPostSubscription, TData, GetNewPostSubscriptionVariables>({ query: GetNewPostDocument, ...options }, handler);
+};
 export const ChangePasswordDocument = gql`
     mutation ChangePassword($token: String!, $password: String!) {
   changePassword(token: $token, newPassword: $password) {
@@ -548,7 +663,7 @@ export const CreatepostDocument = gql`
     mutation createpost($message: String!, $roomId: Int!) {
   createpost(roomId: $roomId, message: $message) {
     post {
-      ...RegularPosts
+      ...RegularPost
     }
     errors {
       ...RegularError
@@ -558,7 +673,7 @@ export const CreatepostDocument = gql`
     }
   }
 }
-    ${RegularPostsFragmentDoc}
+    ${RegularPostFragmentDoc}
 ${RegularErrorFragmentDoc}
 ${RegularSuccessFragmentDoc}`;
 

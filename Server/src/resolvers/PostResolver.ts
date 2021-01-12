@@ -4,8 +4,13 @@ import {
     Ctx,
     Int,
     Mutation,
+    PubSub,
+    PubSubEngine,
     Query,
     Resolver,
+    ResolverFilterData,
+    Root,
+    Subscription,
     UseMiddleware,
 } from "type-graphql";
 import { getConnection } from "typeorm";
@@ -13,9 +18,26 @@ import { MyContext } from "../types";
 import { isAuth } from "../middlewares/isAuth";
 import { isRooms } from "../middlewares/isRooms";
 import { PostResponse, PostsResponse } from "./Objecttypes/PostObject";
+import { Topic } from "../Topics";
+import { roomOptions } from "./Objecttypes/RoomsObject";
 
 @Resolver(Post)
 export class PostResolver {
+    @Subscription(() => PostResponse, {
+        topics: Topic.NewPost,
+        filter: ({
+            payload,
+            args,
+        }: ResolverFilterData<PostResponse, roomOptions>) =>
+            payload.post.id === args.roomId,
+    })
+    Postadded(
+        @Arg("roomId", () => Int) roomId: number,
+        @Root() payload: PostResponse
+    ): PostResponse {
+        return payload;
+    }
+
     @Query(() => Post, { nullable: true })
     async post(@Arg("id", () => Int) id: number): Promise<Post | undefined> {
         return Post.findOne(id);
@@ -72,6 +94,7 @@ export class PostResolver {
     async createpost(
         @Arg("message", () => String) message: string,
         @Arg("roomId", () => Int) roomId: number,
+        @PubSub() pubSub: PubSubEngine,
         @Ctx() { req }: MyContext
     ): Promise<PostResponse> {
         if (!roomId) {
@@ -80,7 +103,8 @@ export class PostResolver {
             };
         }
 
-        let post;
+        let post: Post;
+        let ids: number;
         try {
             const result = await getConnection()
                 .createQueryBuilder()
@@ -93,7 +117,24 @@ export class PostResolver {
                 })
                 .returning("*")
                 .execute();
-            post = result.raw[0];
+            ids = result.raw[0].id;
+            const newpost = await getConnection().query(
+                `
+            select p.*,
+            json_build_object(
+                'id', u.id,
+                'createdAt', u."createdAt",
+                'updatedAt', u."updatedAt",
+                'username', u.username,
+                'email', u.email
+                ) creator
+            from post p
+            inner join public.user u on u.id=p.creatorid
+            where p.id=$1
+            `,
+                [ids]
+            );
+            post = newpost[0];
         } catch (err) {
             return {
                 errors: [
@@ -101,6 +142,10 @@ export class PostResolver {
                 ],
             };
         }
+        await pubSub.publish(Topic.NewPost, {
+            post,
+            success: [{ field: "Post", message: "Successfully Found posts" }],
+        });
         return {
             post,
             success: [{ field: "Post", message: "Successfully Found posts" }],
