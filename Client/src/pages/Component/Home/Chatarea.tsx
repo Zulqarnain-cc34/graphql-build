@@ -1,69 +1,95 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "../../../styles/Components/Home/chatarea.css";
 import {
-    useCreatepostMutation,
-    useGetNewPostSubscription,
-    //useGetpostsQuery,
+    usePostAddedSubscription,
+    useGetpostsQuery,
+    RegularPostsFragment,
 } from "../../../generated/graphql";
 import { Message } from "./Message";
-import { Icon } from "./Icon";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { InputBox } from "./InputBox";
+import { useEffect } from "react";
 interface ChatareaProps {
     roomId: string;
 }
-
-export const Chatarea: React.FC<ChatareaProps> = ({ roomId }) => {
-    //const [{ data }] = useGetpostsQuery({
-    //    variables: { roomId: parseInt(roomId), limit: 30 },
-    //});
-    const [{ data }] = useGetNewPostSubscription({
+const Chatarea: React.FC<ChatareaProps> = ({ roomId }) => {
+    //const [loadedfiles, setLoadedfiles] = useState<any>([]);
+    const [{ data }] = useGetpostsQuery({
+        variables: { roomId: parseInt(roomId), limit: 40 },
+    });
+    const [newPost] = usePostAddedSubscription({
         variables: { roomId: parseInt(roomId) },
     });
-    console.log(data);
-    //console.log(room);
+    const [newPosts, setNewPosts] = useState<RegularPostsFragment[]>([]);
+
+    useEffect(() => {
+        if (newPost.data !== undefined) {
+            setNewPosts([newPost.data.Postadded.post, ...newPosts]);
+        }
+    }, [newPost]);
+    //console.log(roomId);
+    //console.log(newPosts);
+    //console.log(posts);
     //useEffect(() => {
 
-    //}, [])
+    //    async function getNewPost() {
+    //        const message = await posts({
+    //            variables: { roomId: parseInt(roomId) },
+    //        });
+    //        console.log(message);
+    //        //const unsubscribe=await message.unsubscribe();
+    //    }
+    //    getNewPost();
+    //    return () => {
 
-    //console.log(data.posts.posts);
-    const [post, setPost] = useState<string>("");
-    const [, createpost] = useCreatepostMutation();
-    const handlePosts = async (e) => {
-        e.preventDefault();
-        await createpost({ message: post, roomId: parseInt(roomId) });
-    };
-    useEffect(() => { }, []);
+    //    }
+    //}, [posts, roomId])
+    //const makemessage = useCallback(() => {
+    //    if (posts.data?.Postadded?.post) {
+    //        return (
+    //            <Message
+    //                username={posts.data.Postadded.post.creator.username}
+    //                createdAt={posts.data.Postadded.post.createdAt}
+    //                message={posts.data.Postadded.post.message}
+    //            />
+    //        );
+    //    }
+    //}, [posts]);
 
+    //useEffect(() => {
+    //    makemessage();
+    //}, [makemessage, posts?.data]);
+    //console.log(posts.data);
     return (
         <div className="chatarea">
             <div className="chattingarea">
-                {/*{data?.posts.posts.map((post) => (
-                    <Message
-                        username={post["creator"].username}
-                        createdAt={post.createdAt}
-                        message={post.message}
-                    />
-                ))}*/}
-                {data?.Postadded ? (
-                    <Message
-                        username={data.Postadded.post.creator.username}
-                        createdAt={data.Postadded.post.createdAt}
-                        message={data.Postadded.post.message}
-                    />
-                ) : null}
-            </div>
-            <div className="message-post">
-                <div className="message-message">
-                    <form action="" onSubmit={handlePosts}>
-                        <Icon type="fonticon" icon={faSearch} />
-                        <input
-                            type="text"
-                            placeholder="Say Hello to your Friends..."
-                            onChange={(e) => setPost(e.target.value)}
+                {data?.posts.posts
+                    .slice(0)
+                    .reverse()
+                    .map((post) => (
+                        <Message
+                            username={post["creator"].username}
+                            createdAt={post.createdAt}
+                            message={post.message}
+                            key={post.id}
                         />
-                    </form>
-                </div>
+                    ))}
+                {newPosts
+                    .slice(0)
+                    .reverse()
+                    .map((post) => (
+                        <Message
+                            username={post["creator"].username}
+                            createdAt={post.createdAt}
+                            message={post.message}
+                            key={post.id}
+                        />
+                    ))}
+                {console.count("count")}
             </div>
+            <InputBox roomId={roomId} />
         </div>
     );
 };
+
+Chatarea.whyDidYouRender = true;
+export default React.memo(Chatarea);

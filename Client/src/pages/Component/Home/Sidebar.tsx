@@ -15,51 +15,36 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar } from "@material-ui/core";
 import "../../../styles/Components/Home/sidebar.css";
-import { Field } from "./Field";
+import Field from "./Field";
 import Slack from "../../../icons/slack.svg";
-//import Mic from "../../../icons/mute-microphone.svg";
 import Bell from "../../../icons/bell-stationary.svg";
-//import Headphones from "../../../icons/headphones-snow.svg";
-//import Gear from "../../../icons/settings.svg";
-import styled from "styled-components";
 import { Icon } from "./Icon";
-import { useStateValue } from "../../../context/stateProvider";
+import { useMeQuery } from "../../../generated/graphql";
+import { Skeleton } from "@material-ui/lab";
+import { Imageuploader } from "./Imageuploader";
 
-const RoomComponent = styled.button`
-    & {
-        all: unset;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid rgb(185, 185, 185);
-        cursor: pointer;
-        background-color: #2f3136;
-        color: rgb(185, 185, 185);
-        margin-bottom: 20px;
-        transition: 0.2s all ease-in-out;
-    }
-    .font-icon-icon {
-        width: 20px !important;
-        height: 20px !important;
-        color: rgb(185, 185, 185);
-    }
-    &:hover .font-icon-icon,
-    .icon-img-img {
-        color: #c0c0c0 !important;
-    }
-    &:hover {
-        border: 1px solid rgb(102, 104, 104) !important;
-    }
-`;
-
-interface SidebarProps { }
+interface SidebarProps {}
 
 export const Sidebar: React.FC<SidebarProps> = () => {
-    const { state } = useStateValue();
-    console.log(RoomComponent);
+    const [{ data, fetching }] = useMeQuery();
+    console.log(data, fetching);
+    //const handleUploader = (e) => {
+    //    e.preventDefault();
+    //    console.log(imageUploaderRef.current.style);
+    //};
+
+    //const [image, setImage] = useState<string>("");
+    //const imgRef = useRef<HTMLImageElement>();
+    //function uploadimage() {
+    //    console.log("upload image.....");
+    //}
+    //imgRef.current.onclick = (e) => {
+    //    e.preventDefault();
+    //    uploadimage();
+    //};
+    //async function uploadimages() {
+    //    await uploadimage({ image: image });
+    //}
     return (
         <div className="sidebar">
             <div className="sidebar-options">
@@ -100,7 +85,29 @@ export const Sidebar: React.FC<SidebarProps> = () => {
 
                 <div className="sidebar-options-user">
                     <Icon type="img" src={Bell} />
-                    <Avatar className="sidebar-options-user-avatar" />
+                    {fetching ? (
+                        <Skeleton
+                            variant="circle"
+                            style={{ width: 40, height: 40 }}
+                        />
+                    ) : data.me.profilepic ? (
+                        <Avatar
+                            className="sidebar-options-user-avatar"
+                            src={data?.me.profilepic}
+                        />
+                    ) : (
+                        <Avatar className="sidebar-options-user-avatar" />
+                    )}
+                    <div className="imageupload">
+                        {" "}
+                        <Imageuploader
+                            style={{
+                                position: "absolute",
+                                top: "23%",
+                                left: "23%",
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
             <div className="sidebar-groups">
@@ -111,10 +118,7 @@ export const Sidebar: React.FC<SidebarProps> = () => {
                             icon={faSearch}
                             style={{ margin: 0, padding: "3px" }}
                         />
-                        <input
-                            type="text"
-                            placeholder="Search for friends"
-                        />
+                        <input type="text" placeholder="Search for friends" />
                     </div>
                 </div>
                 <div className="sidebar-groups-bottom">
@@ -128,7 +132,6 @@ export const Sidebar: React.FC<SidebarProps> = () => {
                     <Field fieldname="Groups" type="Friends" />
                 </div>
 
-
                 <div className="sidebar-groups-user">
                     <img
                         src={Slack}
@@ -136,12 +139,22 @@ export const Sidebar: React.FC<SidebarProps> = () => {
                         className="sidebar-groups-user-slack"
                     />
                     <div className="sidebar-groups-user-content">
-                        {state.user.id !== 0 ? (
-                            <h2>{state?.user?.username}</h2>
+                        {fetching ? (
+                            <Skeleton
+                                variant="rect"
+                                style={{ width: 85, height: 35 }}
+                            />
+                        ) : parseInt(data?.me?.id) !== 0 ? (
+                            <>
+                                <h2>{data?.me?.username}</h2>
+                                <p>#3985</p>
+                            </>
                         ) : (
+                            <>
                                 <h2>username</h2>
-                            )}
-                        <p>#3985</p>
+                                <p>#3985</p>
+                            </>
+                        )}
                     </div>
                     <div className="sidebar-groups-user-icons">
                         <Icon type="fonticon" icon={faMicrophoneAltSlash} />

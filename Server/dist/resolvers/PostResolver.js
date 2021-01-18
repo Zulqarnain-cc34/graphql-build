@@ -31,6 +31,9 @@ const PostObject_1 = require("./Objecttypes/PostObject");
 const Topics_1 = require("../Topics");
 let PostResolver = class PostResolver {
     Postadded(roomId, payload) {
+        if (payload === undefined) {
+            return undefined;
+        }
         return payload;
     }
     post(id) {
@@ -40,7 +43,7 @@ let PostResolver = class PostResolver {
     }
     posts(limit, roomId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const reallimit = Math.min(50, limit);
+            const reallimit = Math.min(10, limit);
             const replacements = [];
             replacements.push(reallimit);
             replacements.push(roomId);
@@ -58,7 +61,7 @@ let PostResolver = class PostResolver {
             from post p
             inner join public.user u on u.id=p.creatorid
             where p."roomId"=$2
-            order by "createdAt" ASC
+            order by "createdAt" DESC
             limit $1
         `, replacements);
             }
@@ -93,6 +96,15 @@ let PostResolver = class PostResolver {
                     .returning("*")
                     .execute();
                 ids = result.raw[0].id;
+            }
+            catch (err) {
+                return {
+                    errors: [
+                        { field: "PostError", message: "unable to create post" },
+                    ],
+                };
+            }
+            try {
                 const newpost = yield typeorm_1.getConnection().query(`
             select p.*,
             json_build_object(
@@ -147,13 +159,13 @@ let PostResolver = class PostResolver {
 __decorate([
     type_graphql_1.Subscription(() => PostObject_1.PostResponse, {
         topics: Topics_1.Topic.NewPost,
-        filter: ({ payload, args, }) => payload.post.id === args.roomId,
+        filter: ({ payload, args, }) => (payload === null || payload === void 0 ? void 0 : payload.post.roomId) === args.roomId,
     }),
     __param(0, type_graphql_1.Arg("roomId", () => type_graphql_1.Int)),
     __param(1, type_graphql_1.Root()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, PostObject_1.PostResponse]),
-    __metadata("design:returntype", PostObject_1.PostResponse)
+    __metadata("design:returntype", PostObject_1.PostsResponse)
 ], PostResolver.prototype, "Postadded", null);
 __decorate([
     type_graphql_1.Query(() => Post_1.Post, { nullable: true }),

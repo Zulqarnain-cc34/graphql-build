@@ -8,32 +8,32 @@ import {
     Resolver,
     UseMiddleware,
     Int,
-    Subscription,
-    ResolverFilterData,
-    Root,
+    //Subscription,
+    //ResolverFilterData,
+    //Root,
 } from "type-graphql";
 import { MyContext } from "../types";
 import { getConnection } from "typeorm";
 import { User } from "../entities/User";
-import { roomOptions, RoomResponse } from "./Objecttypes/RoomsObject";
+import { RoomResponse } from "./Objecttypes/RoomsObject";
 import { MembersResponse } from "./Objecttypes/MembersObject";
 import { boolResponse } from "./Objecttypes/matchingtypes/UpdatedResponse";
-import { Topic } from "../Topics";
-import { Post } from "../entities/Post";
+//import { Topic } from "../Topics";
+//import { Post } from "../entities/Post";
 @Resolver(Rooms)
 export class RoomResolver {
-    @Subscription(() => [Post], {
-        topics: Topic.GET_ROOM_MESSAGES,
-        filter: ({ payload, args }: ResolverFilterData<Post, roomOptions>) =>
-            payload.roomId === args.roomId,
-    })
-    getRoomPost(
-        @Arg("roomId") roomId: number,
-        @Root() payload: Post[] | Post
-    ): Post[] | Post {
-        console.log(roomId);
-        return payload;
-    }
+    //@Subscription(() => [Post], {
+    //    topics: Topic.GET_ROOM_MESSAGES,
+    //    filter: ({ payload, args }: ResolverFilterData<Post, roomOptions>) =>
+    //        payload.roomId === args.roomId,
+    //})
+    //getRoomPost(
+    //    @Arg("roomId") roomId: number,
+    //    @Root() payload: Post[] | Post
+    //): Post[] | Post {
+    //    console.log(roomId);
+    //    return payload;
+    //}
     @Query(() => [Rooms])
     async Rooms(): Promise<Rooms[]> {
         return await Rooms.find({});
@@ -47,7 +47,7 @@ export class RoomResolver {
     ): Promise<MembersResponse> {
         let rooms;
 
-        const reallimit = Math.min(limit, 25);
+        //const reallimit = Math.min(limit, 25);
 
         try {
             rooms = await getConnection().query(

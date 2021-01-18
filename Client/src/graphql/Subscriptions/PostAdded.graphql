@@ -1,13 +1,10 @@
-subscription getNewPost($roomId: Int!) {
+subscription postAdded($roomId: Int!) {
     Postadded(roomId: $roomId) {
         post {
             ...RegularPosts
         }
         errors {
             ...RegularError
-        }
-        success {
-            ...RegularSuccess
         }
     }
 }

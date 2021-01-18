@@ -4,6 +4,7 @@
     /*align-items: center;*/
     flex: 0.52;
     background-color: var(--grey-bg);
+    position: relative;
 }
 
 @media (max-width: 960px) {

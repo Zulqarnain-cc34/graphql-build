@@ -9,6 +9,7 @@ import {
     Query,
     Resolver,
     ResolverFilterData,
+    //ResolverFilterData,
     Root,
     Subscription,
     UseMiddleware,
@@ -20,21 +21,26 @@ import { isRooms } from "../middlewares/isRooms";
 import { PostResponse, PostsResponse } from "./Objecttypes/PostObject";
 import { Topic } from "../Topics";
 import { roomOptions } from "./Objecttypes/RoomsObject";
+//import { roomOptions } from "./Objecttypes/RoomsObject";
 
 @Resolver(Post)
 export class PostResolver {
     @Subscription(() => PostResponse, {
         topics: Topic.NewPost,
+        //nullable: true,
         filter: ({
             payload,
             args,
         }: ResolverFilterData<PostResponse, roomOptions>) =>
-            payload.post.id === args.roomId,
+            payload?.post.roomId === args.roomId,
     })
     Postadded(
         @Arg("roomId", () => Int) roomId: number,
         @Root() payload: PostResponse
-    ): PostResponse {
+    ): PostsResponse | undefined {
+        if (payload === undefined) {
+            return undefined;
+        }
         return payload;
     }
 
@@ -50,7 +56,7 @@ export class PostResolver {
         //@Arg("cursor", () => String, { nullable: true }) cursor: string | null,
         @Arg("roomId", () => Int) roomId: number
     ): Promise<PostsResponse> {
-        const reallimit = Math.min(50, limit);
+        const reallimit = Math.min(10, limit);
 
         const replacements: any[] = [];
         replacements.push(reallimit);
@@ -75,7 +81,7 @@ export class PostResolver {
             from post p
             inner join public.user u on u.id=p.creatorid
             where p."roomId"=$2
-            order by "createdAt" ASC
+            order by "createdAt" DESC
             limit $1
         `,
                 replacements
@@ -102,7 +108,6 @@ export class PostResolver {
                 errors: [{ field: "Room", message: "Room id is required" }],
             };
         }
-
         let post: Post;
         let ids: number;
         try {
@@ -118,6 +123,14 @@ export class PostResolver {
                 .returning("*")
                 .execute();
             ids = result.raw[0].id;
+        } catch (err) {
+            return {
+                errors: [
+                    { field: "PostError", message: "unable to create post" },
+                ],
+            };
+        }
+        try {
             const newpost = await getConnection().query(
                 `
             select p.*,
@@ -142,10 +155,12 @@ export class PostResolver {
                 ],
             };
         }
+
         await pubSub.publish(Topic.NewPost, {
             post,
             success: [{ field: "Post", message: "Successfully Found posts" }],
         });
+
         return {
             post,
             success: [{ field: "Post", message: "Successfully Found posts" }],

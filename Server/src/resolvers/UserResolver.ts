@@ -18,7 +18,7 @@ import { sendEmail } from "../utils/sendEmail";
 import { UserResponse } from "./Objecttypes/UserObject";
 import { isAuth } from "../middlewares/isAuth";
 import { Reply } from "../entities/Reply";
-
+import { boolResponse } from "./Objecttypes/matchingtypes/UpdatedResponse";
 @Resolver()
 export class UserResolver {
     @Query(() => [User])
@@ -34,6 +34,79 @@ export class UserResolver {
         return User.findOne({ where: { id: req.session.userId } });
     }
 
+    @Mutation(() => boolResponse)
+    @UseMiddleware(isAuth)
+    async profilePic(
+        @Arg("image") image: string,
+        @Ctx() { req }: MyContext
+    ): Promise<boolResponse> {
+        let user: User;
+        const size: number = image.length * (3 / 4) - 2;
+        console.log(size);
+        if (size > 5000000) {
+            return {
+                errors: [
+                    {
+                        field: "image",
+                        message: "image size too big",
+                    },
+                ],
+            };
+        }
+        const base64Rejex: RegExp = /^(?:[A-Z0-9+\/]{4})*(?:[A-Z0-9+\/]{2}==|[A-Z0-9+\/]{3}=|[A-Z0-9+\/]{4})$/i;
+        let isValid: boolean = base64Rejex.test(image);
+        if (!isValid) {
+            return {
+                errors: [
+                    {
+                        field: "image",
+                        message: "not base64 encoded",
+                    },
+                ],
+            };
+        }
+        try {
+            user = await getConnection().query(
+                `
+                update public.user
+                set profilepic=$1
+                where id=$2
+                `,
+                [image, req.session.userId]
+            );
+            console.log(user);
+        } catch (err) {
+            return {
+                updated: false,
+                errors: [
+                    {
+                        field: "updated",
+                        message: err.detail,
+                    },
+                ],
+            };
+        }
+        if (user[1] === 1) {
+            return {
+                updated: true,
+                success: [
+                    {
+                        field: "profilepic",
+                        message: "profilepic updated",
+                    },
+                ],
+            };
+        }
+        return {
+            updated: false,
+            success: [
+                {
+                    field: "profilepic",
+                    message: "profilepic didnot update",
+                },
+            ],
+        };
+    }
     @Mutation(() => UserResponse)
     async register(
         @Arg("username") username: string,

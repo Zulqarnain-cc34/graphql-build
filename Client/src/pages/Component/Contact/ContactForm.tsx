@@ -1,13 +1,15 @@
-import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+//import { faUser } from "@fortawesome/free-solid-svg-icons";
+//import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import "../../../styles/Components/Contact/contactForm.css";
+import { Imageuploader } from "../Home/Imageuploader";
 interface ContactFormProps {}
 
 export const ContactForm: React.FC<ContactFormProps> = () => {
     return (
         <div className="contactform">
-            <div className="contact-info">
+            <Imageuploader />
+            {/*<div className="contact-info">
                 <div className="input-field">
                     <FontAwesomeIcon icon={faUser} className="input-icon" />
                     <input
@@ -17,7 +19,7 @@ export const ContactForm: React.FC<ContactFormProps> = () => {
                         required
                     />
                 </div>
-            </div>
+            </div>*/}
         </div>
     );
 };

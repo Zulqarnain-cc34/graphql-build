@@ -1,0 +1,28 @@
+.message-post {
+    display: flex;
+    flex-direction: column;
+    /*align-items: center;*/
+    justify-content: center;
+    flex: 0.08;
+    padding: 10px;
+}
+
+.message-message>form {
+    display: flex;
+    height: 40px;
+    width: 100%;
+    border-radius: 20px;
+    align-items: center;
+    /*padding: 4px;*/
+    background-color: var(--grey-dark);
+    /*padding: 3px;*/
+    border: 1px solid var(--grey-border);
+}
+
+.message-message>form>input {
+    width: 100%;
+    color: #131313;
+    outline: none;
+    border: none;
+    background-color: var(--grey-dark);
+}

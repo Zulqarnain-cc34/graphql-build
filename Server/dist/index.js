@@ -35,41 +35,44 @@ const redis_1 = require("./redis/redis");
 const path_1 = __importDefault(require("path"));
 const Reply_1 = require("./entities/Reply");
 const Members_1 = require("./entities/Members");
-const pusher_1 = require("./Pusher/pusher");
+const compression_1 = __importDefault(require("compression"));
+const logrocket_1 = __importDefault(require("logrocket"));
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield dotenv_1.default.config();
-    const conn = yield typeorm_1.createConnection({
+    dotenv_1.default.config();
+    logrocket_1.default.init("ik0ybx/sunny-chat-app");
+    yield typeorm_1.createConnection({
         type: process.env.DATABASE_TYPE === "postgres" ? "postgres" : "postgres",
         url: process.env.DATABASE_URL,
         password: process.env.DATABASE_PASSWORD,
         migrations: [path_1.default.join(__dirname, "./migrations/*")],
         logging: process.env.DATABASE_LOG === "true" ? true : false,
-        synchronize: process.env.DATABASE_SYNC === "true" ? true : false,
+        synchronize: false,
         entities: [Post_1.Post, User_1.User, Rooms_1.Rooms, Members_1.Members, Reply_1.Reply],
     });
     const app = express_1.default();
-    yield app.set("trust proxy", true);
-    yield app.disable("x-powered-by");
-    yield app.use(cors_1.default(cors_2.myUrl()));
-    yield app.use(ratelimiter_1.rateLimiter(redis_1.redis));
-    yield app.use(lypd_1.lypdCookie);
-    yield app.use(helmet_1.default({
+    app.set("view engine", "ejs");
+    app.use(express_1.default.json({ limit: "10mb" }));
+    app.set("trust proxy", true);
+    app.disable("x-powered-by");
+    app.use(cors_1.default(cors_2.myUrl()));
+    app.use(ratelimiter_1.rateLimiter(redis_1.redis));
+    app.use(lypd_1.lypdCookie);
+    app.use(compression_1.default());
+    app.use(helmet_1.default({
         contentSecurityPolicy: process.env.NODE_ENV === "production" ? undefined : false,
     }));
-    const httpServer = http_1.default.createServer(app);
+    const pubsub = new apollo_server_express_1.PubSub();
     const port = process.env.NODE_PORT;
-    const apolloServer = yield new apollo_server_express_1.ApolloServer({
+    const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: yield type_graphql_1.buildSchema({
             resolvers: [PostResolver_1.PostResolver, UserResolver_1.UserResolver, RoomsResolver_1.RoomResolver],
             validate: false,
-            pubSub: pusher_1.pusher,
+            pubSub: pubsub,
         }),
-        subscriptions: {
-            path: "/subscriptions",
-        },
         context: ({ req, res }) => ({ req, res, redis: redis_1.redis }),
     });
     apolloServer.applyMiddleware({ app, cors: false });
+    const httpServer = http_1.default.createServer(app);
     apolloServer.installSubscriptionHandlers(httpServer);
     httpServer.listen(port, () => {
         console.log(`🚀 Server ready at http://localhost:${port}${apolloServer.graphqlPath}`);

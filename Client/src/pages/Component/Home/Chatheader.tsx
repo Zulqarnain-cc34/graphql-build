@@ -12,33 +12,47 @@ import { Icon } from "./Icon";
 import { useStateValue } from "../../../context/stateProvider";
 import { useCreateRoomMutation } from "../../../generated/graphql";
 import { GET_ROOM } from "../../../context/actionsTypes";
-interface ChatheaderProps {
-}
+interface ChatheaderProps {}
 
-export const Chatheader: React.FC<ChatheaderProps> = () => {
+const Chatheader: React.FC<ChatheaderProps> = () => {
     const [name, setname] = useState<string>("");
     const { state, dispatch } = useStateValue();
     const [, createroom] = useCreateRoomMutation();
-
 
     const createRoom = async (e) => {
         e.preventDefault();
         const room = await createroom({ name: name });
         dispatch({
             type: GET_ROOM,
-            payload: { room }
-        })
-    }
+            payload: { room },
+        });
+    };
 
     return (
         <div className="chatheader">
             <div className="header-left">
-                {state.room.id !== "" ? (<h1># {state.room.Roomname}</h1>) : (<h1># Roomname</h1>)}
+                {state.room.id !== "" ? (
+                    <h1># {state.room.Roomname}</h1>
+                ) : (
+                    <h1># Roomname</h1>
+                )}
                 <div className="header-left-info">
-                    <input type="text" onChange={(e) => setname(e.target.value)} className="header-addmember" />
-                    {state.room.members !== 0 ? (<p>{state.room.members} members</p>) : (<p>0 member</p>)}
+                    <input
+                        type="text"
+                        onChange={(e) => setname(e.target.value)}
+                        className="header-addmember"
+                    />
+                    {state.room.members !== 0 ? (
+                        <p>{state.room.members} members</p>
+                    ) : (
+                        <p>0 members</p>
+                    )}
                     <div className="header-left-info-Add">
-                        <Icon type="fonticon" icon={faPlus} onClick={createRoom} />
+                        <Icon
+                            type="fonticon"
+                            icon={faPlus}
+                            onClick={createRoom}
+                        />
                         <p>Add member</p>
                     </div>
                 </div>
@@ -53,3 +67,4 @@ export const Chatheader: React.FC<ChatheaderProps> = () => {
         </div>
     );
 };
+export default React.memo(Chatheader);

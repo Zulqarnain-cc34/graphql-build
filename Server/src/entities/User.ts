@@ -38,6 +38,10 @@ export class User extends BaseEntity {
     @Column({ unique: true })
     password!: string;
 
+    @Field(() => String, { nullable: true })
+    @Column({ nullable: true })
+    profilepic?: String;
+
     @OneToMany(() => Post, (post) => post.creator)
     posts: Post[];
 

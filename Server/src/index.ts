@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import "dotenv-safe/config";
 import express from "express";
-import { ApolloServer } from "apollo-server-express";
+import { ApolloServer, PubSub } from "apollo-server-express";
 import { createConnection } from "typeorm";
 import { buildSchema } from "type-graphql";
 import { Post } from "./entities/Post";
@@ -18,44 +18,50 @@ import cors from "cors";
 //import { csrfProtection } from "./middlewares/csrf";
 import helmet from "helmet";
 import dotenv from "dotenv";
-import _ from "./../environment";
+//import _ from "./../environment";
 import http from "http";
 import { myUrl } from "./middlewares/cors";
 import { redis } from "./redis/redis";
 import path from "path";
 import { Reply } from "./entities/Reply";
 import { Members } from "./entities/Members";
-import { pusher } from "./Pusher/pusher";
+//import { pusher } from "./Pusher/pusher";
+import compression from "compression";
+import LogRocket from "logrocket";
 
 const main = async () => {
-    await dotenv.config();
-    const conn = await createConnection({
+    dotenv.config();
+    LogRocket.init("ik0ybx/sunny-chat-app");
+
+    await createConnection({
         type:
             process.env.DATABASE_TYPE === "postgres" ? "postgres" : "postgres",
         url: process.env.DATABASE_URL,
         password: process.env.DATABASE_PASSWORD,
         migrations: [path.join(__dirname, "./migrations/*")],
         logging: process.env.DATABASE_LOG === "true" ? true : false,
-        synchronize: process.env.DATABASE_SYNC === "true" ? true : false,
+        synchronize: false,
         entities: [Post, User, Rooms, Members, Reply],
     });
-    //await conn.runMigrations();
+    //await User.delete({});
     const app = express();
 
     //Redis Connection initialization and setup of configuration
     //intialization of connection,creating redis client and setting up of store
     //port of the redis server not necessary
-
     //MiddleWares
 
-    await app.set("trust proxy", true);
-    await app.disable("x-powered-by");
-    await app.use(cors(myUrl()));
-    await app.use(rateLimiter(redis));
-    await app.use(lypdCookie);
+    app.set("view engine", "ejs");
+    app.use(express.json({ limit: "10mb" }));
 
+    app.set("trust proxy", true);
+    app.disable("x-powered-by");
+    app.use(cors(myUrl()));
+    app.use(rateLimiter(redis));
+    app.use(lypdCookie);
+    app.use(compression());
     //app.use(csrfProtection());
-    await app.use(
+    app.use(
         helmet({
             contentSecurityPolicy:
                 process.env.NODE_ENV === "production" ? undefined : false,
@@ -66,25 +72,35 @@ const main = async () => {
     //intialization of cookies as well
 
     //http server
-    const httpServer = http.createServer(app);
-
+    const pubsub = new PubSub();
     const port: string = process.env.NODE_PORT;
 
     //Starting the apollo server with my user and post reslovers
-    const apolloServer: ApolloServer = await new ApolloServer({
+    const apolloServer: ApolloServer = new ApolloServer({
         schema: await buildSchema({
             resolvers: [PostResolver, UserResolver, RoomResolver],
             validate: false,
-            pubSub: pusher,
+            pubSub: pubsub,
         }),
-        subscriptions: {
-            path: "/subscriptions",
-        },
+        //subscriptions: {
+        //    //keepAlive: 12000,
+        //    onConnect: (webSocket, context) => {
+        //        //console.log(connectionParams,webSocket,context);c
+        //        console.log("connected");
+        //    },
+        //    onDisconnect: (webSocket, context) => {
+        //        console.log("disconnected");
+        //        //console.log(webSocket,context);
+        //    },
+        //},
         context: ({ req, res }) => ({ req, res, redis }),
     });
     apolloServer.applyMiddleware({ app, cors: false });
-    apolloServer.installSubscriptionHandlers(httpServer);
 
+    const httpServer = http.createServer(app);
+
+    apolloServer.installSubscriptionHandlers(httpServer);
+    //console.log(apolloServer);
     httpServer.listen(port, () => {
         console.log(
             `🚀 Server ready at http://localhost:${port}${apolloServer.graphqlPath}`

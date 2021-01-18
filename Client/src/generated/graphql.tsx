@@ -48,6 +48,7 @@ export type User = {
   updatedAt: Scalars['String'];
   username: Scalars['String'];
   email: Scalars['String'];
+  profilepic?: Maybe<Scalars['String']>;
 };
 
 export type Reply = {
@@ -117,6 +118,7 @@ export type Members = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  profilePic: BoolResponse;
   register: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
@@ -132,6 +134,11 @@ export type Mutation = {
   deleteRoom: BoolResponse;
   joinRoom: BoolResponse;
   createRoom: RoomResponse;
+};
+
+
+export type MutationProfilePicArgs = {
+  image: Scalars['String'];
 };
 
 
@@ -211,6 +218,13 @@ export type MutationCreateRoomArgs = {
   name: Scalars['String'];
 };
 
+export type BoolResponse = {
+  __typename?: 'boolResponse';
+  success?: Maybe<Array<Success>>;
+  updated?: Maybe<Scalars['Boolean']>;
+  errors?: Maybe<Array<FieldError>>;
+};
+
 export type UserResponse = {
   __typename?: 'UserResponse';
   success?: Maybe<Array<Success>>;
@@ -225,13 +239,6 @@ export type PostResponse = {
   errors?: Maybe<Array<FieldError>>;
 };
 
-export type BoolResponse = {
-  __typename?: 'boolResponse';
-  success?: Maybe<Array<Success>>;
-  updated?: Maybe<Scalars['Boolean']>;
-  errors?: Maybe<Array<FieldError>>;
-};
-
 export type RoomResponse = {
   __typename?: 'RoomResponse';
   success?: Maybe<Array<Success>>;
@@ -242,7 +249,6 @@ export type RoomResponse = {
 export type Subscription = {
   __typename?: 'Subscription';
   Postadded: PostResponse;
-  getRoomPost: Array<Post>;
 };
 
 
@@ -250,35 +256,23 @@ export type SubscriptionPostaddedArgs = {
   roomId: Scalars['Int'];
 };
 
-
-export type SubscriptionGetRoomPostArgs = {
-  roomId: Scalars['Float'];
-};
-
-export type GetNewPostSubscriptionVariables = Exact<{
+export type PostAddedSubscriptionVariables = Exact<{
   roomId: Scalars['Int'];
 }>;
 
 
-export type GetNewPostSubscription = (
+export type PostAddedSubscription = (
   { __typename?: 'Subscription' }
-  & {
-    Postadded: (
-      { __typename?: 'PostResponse' }
-      & {
-        post?: Maybe<(
-          { __typename?: 'Post' }
-          & RegularPostsFragment
-        )>, errors?: Maybe<Array<(
-          { __typename?: 'FieldError' }
-          & RegularErrorFragment
-        )>>, success?: Maybe<Array<(
-          { __typename?: 'Success' }
-          & RegularSuccessFragment
-        )>>
-      }
-    )
-  }
+  & { Postadded: (
+    { __typename?: 'PostResponse' }
+    & { post?: Maybe<(
+      { __typename?: 'Post' }
+      & RegularPostsFragment
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & RegularErrorFragment
+    )>> }
+  ) }
 );
 
 export type RegularErrorFragment = (
@@ -294,12 +288,10 @@ export type RegularPostFragment = (
 export type RegularPostsFragment = (
   { __typename?: 'Post' }
   & Pick<Post, 'id' | 'createdAt' | 'updatedAt' | 'creatorid' | 'message'>
-  & {
-    creator: (
-      { __typename?: 'User' }
-      & RegularUserFragment
-    )
-  }
+  & { creator: (
+    { __typename?: 'User' }
+    & RegularUserFragment
+  ) }
 );
 
 export type RegularRoomsFragment = (
@@ -314,7 +306,7 @@ export type RegularSuccessFragment = (
 
 export type RegularUserFragment = (
   { __typename?: 'User' }
-  & Pick<User, 'id' | 'username'>
+  & Pick<User, 'id' | 'username' | 'profilepic'>
 );
 
 export type ChangePasswordMutationVariables = Exact<{
@@ -325,20 +317,16 @@ export type ChangePasswordMutationVariables = Exact<{
 
 export type ChangePasswordMutation = (
   { __typename?: 'Mutation' }
-  & {
-    changePassword: (
-      { __typename?: 'UserResponse' }
-      & {
-        user?: Maybe<(
-          { __typename?: 'User' }
-          & RegularUserFragment
-        )>, errors?: Maybe<Array<(
-          { __typename?: 'FieldError' }
-          & Pick<FieldError, 'field' | 'message'>
-        )>>
-      }
-    )
-  }
+  & { changePassword: (
+    { __typename?: 'UserResponse' }
+    & { user?: Maybe<(
+      { __typename?: 'User' }
+      & RegularUserFragment
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>> }
+  ) }
 );
 
 export type CreateRoomMutationVariables = Exact<{
@@ -348,23 +336,19 @@ export type CreateRoomMutationVariables = Exact<{
 
 export type CreateRoomMutation = (
   { __typename?: 'Mutation' }
-  & {
-    createRoom: (
-      { __typename?: 'RoomResponse' }
-      & {
-        rooms?: Maybe<(
-          { __typename?: 'Rooms' }
-          & RegularRoomsFragment
-        )>, errors?: Maybe<Array<(
-          { __typename?: 'FieldError' }
-          & RegularErrorFragment
-        )>>, success?: Maybe<Array<(
-          { __typename?: 'Success' }
-          & RegularSuccessFragment
-        )>>
-      }
-    )
-  }
+  & { createRoom: (
+    { __typename?: 'RoomResponse' }
+    & { rooms?: Maybe<(
+      { __typename?: 'Rooms' }
+      & RegularRoomsFragment
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & RegularErrorFragment
+    )>>, success?: Maybe<Array<(
+      { __typename?: 'Success' }
+      & RegularSuccessFragment
+    )>> }
+  ) }
 );
 
 export type CreatepostMutationVariables = Exact<{
@@ -375,23 +359,19 @@ export type CreatepostMutationVariables = Exact<{
 
 export type CreatepostMutation = (
   { __typename?: 'Mutation' }
-  & {
-    createpost: (
-      { __typename?: 'PostResponse' }
-      & {
-        post?: Maybe<(
-          { __typename?: 'Post' }
-          & RegularPostFragment
-        )>, errors?: Maybe<Array<(
-          { __typename?: 'FieldError' }
-          & RegularErrorFragment
-        )>>, success?: Maybe<Array<(
-          { __typename?: 'Success' }
-          & RegularSuccessFragment
-        )>>
-      }
-    )
-  }
+  & { createpost: (
+    { __typename?: 'PostResponse' }
+    & { post?: Maybe<(
+      { __typename?: 'Post' }
+      & RegularPostFragment
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & RegularErrorFragment
+    )>>, success?: Maybe<Array<(
+      { __typename?: 'Success' }
+      & RegularSuccessFragment
+    )>> }
+  ) }
 );
 
 export type ForgotpasswordMutationVariables = Exact<{
@@ -411,18 +391,14 @@ export type JoinroomMutationVariables = Exact<{
 
 export type JoinroomMutation = (
   { __typename?: 'Mutation' }
-  & {
-    joinRoom: (
-      { __typename?: 'boolResponse' }
-      & Pick<BoolResponse, 'updated'>
-      & {
-        errors?: Maybe<Array<(
-          { __typename?: 'FieldError' }
-          & Pick<FieldError, 'field' | 'message'>
-        )>>
-      }
-    )
-  }
+  & { joinRoom: (
+    { __typename?: 'boolResponse' }
+    & Pick<BoolResponse, 'updated'>
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>> }
+  ) }
 );
 
 export type LoginMutationVariables = Exact<{
@@ -433,20 +409,16 @@ export type LoginMutationVariables = Exact<{
 
 export type LoginMutation = (
   { __typename?: 'Mutation' }
-  & {
-    login: (
-      { __typename?: 'UserResponse' }
-      & {
-        errors?: Maybe<Array<(
-          { __typename?: 'FieldError' }
-          & Pick<FieldError, 'field' | 'message'>
-        )>>, user?: Maybe<(
-          { __typename?: 'User' }
-          & RegularUserFragment
-        )>
-      }
-    )
-  }
+  & { login: (
+    { __typename?: 'UserResponse' }
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>>, user?: Maybe<(
+      { __typename?: 'User' }
+      & RegularUserFragment
+    )> }
+  ) }
 );
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
@@ -466,20 +438,36 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = (
   { __typename?: 'Mutation' }
-  & {
-    register: (
-      { __typename?: 'UserResponse' }
-      & {
-        user?: Maybe<(
-          { __typename?: 'User' }
-          & RegularUserFragment
-        )>, errors?: Maybe<Array<(
-          { __typename?: 'FieldError' }
-          & Pick<FieldError, 'field' | 'message'>
-        )>>
-      }
-    )
-  }
+  & { register: (
+    { __typename?: 'UserResponse' }
+    & { user?: Maybe<(
+      { __typename?: 'User' }
+      & RegularUserFragment
+    )>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>> }
+  ) }
+);
+
+export type UploadImageMutationVariables = Exact<{
+  image: Scalars['String'];
+}>;
+
+
+export type UploadImageMutation = (
+  { __typename?: 'Mutation' }
+  & { profilePic: (
+    { __typename?: 'boolResponse' }
+    & Pick<BoolResponse, 'updated'>
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & RegularErrorFragment
+    )>>, success?: Maybe<Array<(
+      { __typename?: 'Success' }
+      & RegularSuccessFragment
+    )>> }
+  ) }
 );
 
 export type GetpostsQueryVariables = Exact<{
@@ -490,23 +478,19 @@ export type GetpostsQueryVariables = Exact<{
 
 export type GetpostsQuery = (
   { __typename?: 'Query' }
-  & {
-    posts: (
-      { __typename?: 'PostsResponse' }
-      & {
-        posts?: Maybe<Array<(
-          { __typename?: 'Post' }
-          & RegularPostsFragment
-        )>>, errors?: Maybe<Array<(
-          { __typename?: 'FieldError' }
-          & RegularErrorFragment
-        )>>, success?: Maybe<Array<(
-          { __typename?: 'Success' }
-          & RegularSuccessFragment
-        )>>
-      }
-    )
-  }
+  & { posts: (
+    { __typename?: 'PostsResponse' }
+    & { posts?: Maybe<Array<(
+      { __typename?: 'Post' }
+      & RegularPostsFragment
+    )>>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & RegularErrorFragment
+    )>>, success?: Maybe<Array<(
+      { __typename?: 'Success' }
+      & RegularSuccessFragment
+    )>> }
+  ) }
 );
 
 export type GetroomsQueryVariables = Exact<{
@@ -516,28 +500,22 @@ export type GetroomsQueryVariables = Exact<{
 
 export type GetroomsQuery = (
   { __typename?: 'Query' }
-  & {
-    getRoom: (
-      { __typename?: 'MembersResponse' }
-      & {
-        rooms?: Maybe<Array<(
-          { __typename?: 'Members' }
-          & {
-            room?: Maybe<(
-              { __typename?: 'Rooms' }
-              & RegularRoomsFragment
-            )>
-          }
-        )>>, errors?: Maybe<Array<(
-          { __typename?: 'FieldError' }
-          & RegularErrorFragment
-        )>>, success?: Maybe<Array<(
-          { __typename?: 'Success' }
-          & RegularSuccessFragment
-        )>>
-      }
-    )
-  }
+  & { getRoom: (
+    { __typename?: 'MembersResponse' }
+    & { rooms?: Maybe<Array<(
+      { __typename?: 'Members' }
+      & { room?: Maybe<(
+        { __typename?: 'Rooms' }
+        & RegularRoomsFragment
+      )> }
+    )>>, errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & RegularErrorFragment
+    )>>, success?: Maybe<Array<(
+      { __typename?: 'Success' }
+      & RegularSuccessFragment
+    )>> }
+  ) }
 );
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
@@ -545,12 +523,10 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type MeQuery = (
   { __typename?: 'Query' }
-  & {
-    me?: Maybe<(
-      { __typename?: 'User' }
-      & RegularUserFragment
-    )>
-  }
+  & { me?: Maybe<(
+    { __typename?: 'User' }
+    & RegularUserFragment
+  )> }
 );
 
 export const RegularErrorFragmentDoc = gql`
@@ -572,6 +548,7 @@ export const RegularUserFragmentDoc = gql`
     fragment RegularUser on User {
   id
   username
+  profilepic
 }
     `;
 export const RegularPostsFragmentDoc = gql`
@@ -600,8 +577,8 @@ export const RegularSuccessFragmentDoc = gql`
   message
 }
     `;
-export const GetNewPostDocument = gql`
-    subscription getNewPost($roomId: Int!) {
+export const PostAddedDocument = gql`
+    subscription postAdded($roomId: Int!) {
   Postadded(roomId: $roomId) {
     post {
       ...RegularPosts
@@ -609,17 +586,13 @@ export const GetNewPostDocument = gql`
     errors {
       ...RegularError
     }
-    success {
-      ...RegularSuccess
-    }
   }
 }
     ${RegularPostsFragmentDoc}
-${RegularErrorFragmentDoc}
-${RegularSuccessFragmentDoc}`;
+${RegularErrorFragmentDoc}`;
 
-export function useGetNewPostSubscription<TData = GetNewPostSubscription>(options: Omit<Urql.UseSubscriptionArgs<GetNewPostSubscriptionVariables>, 'query'> = {}, handler?: Urql.SubscriptionHandler<GetNewPostSubscription, TData>) {
-  return Urql.useSubscription<GetNewPostSubscription, TData, GetNewPostSubscriptionVariables>({ query: GetNewPostDocument, ...options }, handler);
+export function usePostAddedSubscription<TData = PostAddedSubscription>(options: Omit<Urql.UseSubscriptionArgs<PostAddedSubscriptionVariables>, 'query'> = {}, handler?: Urql.SubscriptionHandler<PostAddedSubscription, TData>) {
+  return Urql.useSubscription<PostAddedSubscription, TData, PostAddedSubscriptionVariables>({ query: PostAddedDocument, ...options }, handler);
 };
 export const ChangePasswordDocument = gql`
     mutation ChangePassword($token: String!, $password: String!) {
@@ -746,6 +719,24 @@ export const RegisterDocument = gql`
 
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
+};
+export const UploadImageDocument = gql`
+    mutation UploadImage($image: String!) {
+  profilePic(image: $image) {
+    updated
+    errors {
+      ...RegularError
+    }
+    success {
+      ...RegularSuccess
+    }
+  }
+}
+    ${RegularErrorFragmentDoc}
+${RegularSuccessFragmentDoc}`;
+
+export function useUploadImageMutation() {
+  return Urql.useMutation<UploadImageMutation, UploadImageMutationVariables>(UploadImageDocument);
 };
 export const GetpostsDocument = gql`
     query getposts($limit: Int!, $roomId: Int!) {

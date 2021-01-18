@@ -24,7 +24,6 @@ interface FormProps {
 }
 
 export const Form: React.FC<FormProps> = ({ icons, registers }) => {
-
     const { dispatch } = useStateValue();
     let history = useHistory();
     //const { setuser } = useUser();
@@ -56,11 +55,11 @@ export const Form: React.FC<FormProps> = ({ icons, registers }) => {
             dispatch({
                 type: GET_SESSION,
                 payload: {
-                    user: response.data?.register.user
-                }
-            })
+                    user: response.data?.register.user,
+                },
+            });
             //setuser(response.data?.register.user);
-            history.push("/contactform");
+            history.push("/");
         } else if (response.data?.register.errors) {
             const error = toErrorMap(response.data?.register.errors);
             console.log(error);
@@ -77,14 +76,15 @@ export const Form: React.FC<FormProps> = ({ icons, registers }) => {
             usernameorEmail: username,
             password: password,
         });
+        console.log(response);
 
         if (response.data?.login.user) {
             dispatch({
                 type: GET_SESSION,
                 payload: {
-                    user: response.data?.login.user
-                }
-            })
+                    user: response.data?.login.user,
+                },
+            });
             history.push("/");
         } else if (response.data?.login.errors) {
             const error = toErrorMap(response.data?.login.errors);

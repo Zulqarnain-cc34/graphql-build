@@ -36,6 +36,7 @@ const sendEmail_1 = require("../utils/sendEmail");
 const UserObject_1 = require("./Objecttypes/UserObject");
 const isAuth_1 = require("../middlewares/isAuth");
 const Reply_1 = require("../entities/Reply");
+const UpdatedResponse_1 = require("./Objecttypes/matchingtypes/UpdatedResponse");
 let UserResolver = class UserResolver {
     Users({}) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -48,6 +49,74 @@ let UserResolver = class UserResolver {
                 return undefined;
             }
             return User_1.User.findOne({ where: { id: req.session.userId } });
+        });
+    }
+    profilePic(image, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let user;
+            const size = image.length * (3 / 4) - 2;
+            console.log(size);
+            if (size > 5000000) {
+                return {
+                    errors: [
+                        {
+                            field: "image",
+                            message: "image size too big",
+                        },
+                    ],
+                };
+            }
+            const base64Rejex = /^(?:[A-Z0-9+\/]{4})*(?:[A-Z0-9+\/]{2}==|[A-Z0-9+\/]{3}=|[A-Z0-9+\/]{4})$/i;
+            let isValid = base64Rejex.test(image);
+            if (!isValid) {
+                return {
+                    errors: [
+                        {
+                            field: "image",
+                            message: "not base64 encoded",
+                        },
+                    ],
+                };
+            }
+            try {
+                user = yield typeorm_1.getConnection().query(`
+                update public.user
+                set profilepic=$1
+                where id=$2
+                `, [image, req.session.userId]);
+                console.log(user);
+            }
+            catch (err) {
+                return {
+                    updated: false,
+                    errors: [
+                        {
+                            field: "updated",
+                            message: err.detail,
+                        },
+                    ],
+                };
+            }
+            if (user[1] === 1) {
+                return {
+                    updated: true,
+                    success: [
+                        {
+                            field: "profilepic",
+                            message: "profilepic updated",
+                        },
+                    ],
+                };
+            }
+            return {
+                updated: false,
+                success: [
+                    {
+                        field: "profilepic",
+                        message: "profilepic didnot update",
+                    },
+                ],
+            };
         });
     }
     register(username, email, password, { req }) {
@@ -341,6 +410,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "me", null);
+__decorate([
+    type_graphql_1.Mutation(() => UpdatedResponse_1.boolResponse),
+    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
+    __param(0, type_graphql_1.Arg("image")),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "profilePic", null);
 __decorate([
     type_graphql_1.Mutation(() => UserObject_1.UserResponse),
     __param(0, type_graphql_1.Arg("username")),

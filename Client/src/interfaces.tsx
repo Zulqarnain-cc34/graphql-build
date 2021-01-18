@@ -4,12 +4,12 @@ export interface UserState {
 }
 
 export interface RoomState {
-    id: string,
-    Roomname: string,
-    createdAt?: string,
-    updatedAt?: string,
-    adminId: string,
-    members: number,
+    id: string;
+    Roomname: string;
+    createdAt?: string;
+    updatedAt?: string;
+    adminId: string;
+    members: number;
 }
 
 export interface AppStateTypes {
@@ -19,5 +19,12 @@ export interface AppStateTypes {
 
 export interface IActionTypes {
     type: string;
-    payload: AppStateTypes
+    payload: AppStateTypes;
+}
+
+export interface FileTypes {
+    data: any;
+    name: string;
+    size: number;
+    type: string;
 }

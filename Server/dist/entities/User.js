@@ -47,6 +47,11 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
 __decorate([
+    type_graphql_1.Field(() => String, { nullable: true }),
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "profilepic", void 0);
+__decorate([
     typeorm_1.OneToMany(() => Post_1.Post, (post) => post.creator),
     __metadata("design:type", Array)
 ], User.prototype, "posts", void 0);
