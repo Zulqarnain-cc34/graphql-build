@@ -40,17 +40,16 @@ const logrocket_1 = __importDefault(require("logrocket"));
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     dotenv_1.default.config();
     logrocket_1.default.init("ik0ybx/sunny-chat-app");
-    yield typeorm_1.createConnection({
+    const conn = yield typeorm_1.createConnection({
         type: process.env.DATABASE_TYPE === "postgres" ? "postgres" : "postgres",
         url: process.env.DATABASE_URL,
         password: process.env.DATABASE_PASSWORD,
         migrations: [path_1.default.join(__dirname, "./migrations/*")],
         logging: process.env.DATABASE_LOG === "true" ? true : false,
-        synchronize: false,
+        synchronize: process.env.DATABASE_SYNC == "true" ? true : false,
         entities: [Post_1.Post, User_1.User, Rooms_1.Rooms, Members_1.Members, Reply_1.Reply],
     });
     const app = express_1.default();
-    app.set("view engine", "ejs");
     app.use(express_1.default.json({ limit: "10mb" }));
     app.set("trust proxy", true);
     app.disable("x-powered-by");

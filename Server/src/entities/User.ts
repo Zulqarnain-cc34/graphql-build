@@ -4,6 +4,8 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinTable,
+    ManyToMany,
     OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
@@ -47,6 +49,10 @@ export class User extends BaseEntity {
 
     @OneToMany(() => Reply, (reply) => reply.users)
     replies: Reply[];
+
+    @ManyToMany(() => User)
+    @JoinTable()
+    friends: User[];
 
     @OneToMany(() => Members, (member) => member.users)
     memberin: Members[];

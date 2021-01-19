@@ -33,17 +33,16 @@ const main = async () => {
     dotenv.config();
     LogRocket.init("ik0ybx/sunny-chat-app");
 
-    await createConnection({
+    const conn = await createConnection({
         type:
             process.env.DATABASE_TYPE === "postgres" ? "postgres" : "postgres",
         url: process.env.DATABASE_URL,
         password: process.env.DATABASE_PASSWORD,
         migrations: [path.join(__dirname, "./migrations/*")],
         logging: process.env.DATABASE_LOG === "true" ? true : false,
-        synchronize: false,
+        synchronize: process.env.DATABASE_SYNC == "true" ? true : false,
         entities: [Post, User, Rooms, Members, Reply],
     });
-    //await User.delete({});
     const app = express();
 
     //Redis Connection initialization and setup of configuration
@@ -51,7 +50,6 @@ const main = async () => {
     //port of the redis server not necessary
     //MiddleWares
 
-    app.set("view engine", "ejs");
     app.use(express.json({ limit: "10mb" }));
 
     app.set("trust proxy", true);

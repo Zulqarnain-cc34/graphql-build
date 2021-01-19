@@ -29,7 +29,7 @@ export const Imageuploader: React.FC<ImageuploaderProps> = ({ style }) => {
                 ref: uploadRef,
             },
         });
-    }, [uploadRef]);
+    }, [uploadRef, dispatch]);
     const submitimages = (e) => {
         e.preventDefault();
         loadedfiles.map(

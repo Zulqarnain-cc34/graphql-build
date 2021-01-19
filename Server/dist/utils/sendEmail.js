@@ -16,13 +16,14 @@ exports.sendEmail = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 function sendEmail(to, html) {
     return __awaiter(this, void 0, void 0, function* () {
+        let testAccount = yield nodemailer_1.default.createTestAccount();
         let transporter = nodemailer_1.default.createTransport({
             service: "gmail",
             port: 587,
             secure: false,
             auth: {
-                user: "powerranger16918@gmail.com",
-                pass: process.env.GMAIL_PASSWORD,
+                user: testAccount.user,
+                pass: testAccount.pass,
             },
         });
         transporter.verify((error, success) => {

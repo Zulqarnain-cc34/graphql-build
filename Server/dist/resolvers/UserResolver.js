@@ -49,7 +49,7 @@ let UserResolver = class UserResolver {
             if (!req.session.userId) {
                 return undefined;
             }
-            const user = User_1.User.findOne({ where: { id: req.session.userId } });
+            const user = yield User_1.User.findOne({ where: { id: req.session.userId } });
             yield pubSub.publish(Topics_1.Topic.ONLINE_USERS, {
                 user,
                 success: [{ field: "user", message: "user logged is online" }],
@@ -80,6 +80,125 @@ let UserResolver = class UserResolver {
             ];
         }
         return onlineusers;
+    }
+    makeFriends(userId, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let friend;
+            try {
+                friend = yield typeorm_1.getConnection().query(`
+            insert into user_friends_user ("userId_1","userId_2")values($1,$2)
+
+        `, [req.session.userId, userId]);
+            }
+            catch (err) {
+                return {
+                    updated: false,
+                    errors: [
+                        {
+                            field: "friend",
+                            message: `failed in making the user friend:   ${err.detail}`,
+                        },
+                    ],
+                };
+            }
+            if (friend[1] === 0) {
+                return {
+                    updated: false,
+                    success: [
+                        {
+                            field: "friend",
+                            message: "you have are already friends",
+                        },
+                    ],
+                };
+            }
+            return {
+                updated: true,
+                success: [
+                    {
+                        field: "friend",
+                        message: "you have succesfully made a friend",
+                    },
+                ],
+            };
+        });
+    }
+    deleteFriends(userId, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let friend;
+            try {
+                friend = yield typeorm_1.getConnection().query(`
+            delete from user_friends_user
+            where "userId_1"=$1 and "userId_2"=$2
+
+        `, [req.session.userId, userId]);
+            }
+            catch (err) {
+                return {
+                    updated: false,
+                    errors: [
+                        {
+                            field: "friend",
+                            message: `failed in deleting the user friend:   ${err.detail}`,
+                        },
+                    ],
+                };
+            }
+            console.log(friend);
+            if (friend[1] === 0) {
+                return {
+                    updated: false,
+                    success: [
+                        {
+                            field: "friend",
+                            message: "you have already unfriended the friend",
+                        },
+                    ],
+                };
+            }
+            return {
+                updated: true,
+                success: [
+                    {
+                        field: "friend",
+                        message: "you have succesfully unfriended a friend",
+                    },
+                ],
+            };
+        });
+    }
+    findFriends({ req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const friends = yield typeorm_1.getConnection().query(` SELECT *
+            FROM public.user U
+            WHERE U.id <> $1
+            AND EXISTS(
+            SELECT 1
+            FROM user_friends_user F
+            WHERE (F."userId_1" = $1 AND F."userId_2" = U.id )
+            OR (F."userId_2" = $1 AND F."userId_1" = U.id )
+            );  `, [req.session.userId]);
+            if (friends.length === 0) {
+                return {
+                    users: friends,
+                    success: [
+                        {
+                            field: "friends",
+                            message: "you have no friends",
+                        },
+                    ],
+                };
+            }
+            return {
+                users: friends,
+                success: [
+                    {
+                        field: "friends",
+                        message: "successfully queryed friends",
+                    },
+                ],
+            };
+        });
     }
     profilePic(image, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -458,6 +577,32 @@ __decorate([
     __metadata("design:paramtypes", [UserObject_1.UserResponse, String]),
     __metadata("design:returntype", Array)
 ], UserResolver.prototype, "onlineUsers", null);
+__decorate([
+    type_graphql_1.Mutation(() => UpdatedResponse_1.boolResponse),
+    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
+    __param(0, type_graphql_1.Arg("userId")),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "makeFriends", null);
+__decorate([
+    type_graphql_1.Mutation(() => UpdatedResponse_1.boolResponse),
+    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
+    __param(0, type_graphql_1.Arg("userId")),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "deleteFriends", null);
+__decorate([
+    type_graphql_1.Query(() => UserObject_1.UsersResponse, { nullable: true }),
+    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
+    __param(0, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "findFriends", null);
 __decorate([
     type_graphql_1.Mutation(() => UpdatedResponse_1.boolResponse),
     type_graphql_1.UseMiddleware(isAuth_1.isAuth),

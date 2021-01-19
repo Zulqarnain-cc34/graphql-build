@@ -14,13 +14,13 @@ export class UserResponse {
 }
 
 @ObjectType()
-export class boolResponse {
+export class UsersResponse {
     @Field(() => [Success], { nullable: true })
     success?: Success[];
 
     @Field(() => [FieldError], { nullable: true })
     errors?: FieldError[];
 
-    @Field(() => Boolean, { nullable: true })
-    result?: Boolean;
+    @Field(() => [User], { nullable: true })
+    users?: User[];
 }

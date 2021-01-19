@@ -19,7 +19,7 @@ import { getConnection } from "typeorm";
 import { COOKIE_NAME } from "../constants";
 import { v4 } from "uuid";
 import { sendEmail } from "../utils/sendEmail";
-import { UserResponse } from "./Objecttypes/UserObject";
+import { UserResponse, UsersResponse } from "./Objecttypes/UserObject";
 import { isAuth } from "../middlewares/isAuth";
 import { Reply } from "../entities/Reply";
 import { boolResponse } from "./Objecttypes/matchingtypes/UpdatedResponse";
@@ -39,7 +39,7 @@ export class UserResolver {
         if (!req.session.userId) {
             return undefined;
         }
-        const user = User.findOne({ where: { id: req.session.userId } });
+        const user = await User.findOne({ where: { id: req.session.userId } });
         await pubSub.publish(Topic.ONLINE_USERS, {
             user,
             success: [{ field: "user", message: "user logged is online" }],
@@ -76,6 +76,140 @@ export class UserResolver {
         return onlineusers;
     }
 
+    @Mutation(() => boolResponse)
+    @UseMiddleware(isAuth)
+    async makeFriends(
+        @Arg("userId") userId: number,
+        @Ctx() { req }: MyContext
+    ): Promise<boolResponse> {
+        let friend;
+        try {
+            friend = await getConnection().query(
+                `
+            insert into user_friends_user ("userId_1","userId_2")values($1,$2)
+
+        `,
+                [req.session.userId, userId]
+            );
+        } catch (err) {
+            return {
+                updated: false,
+                errors: [
+                    {
+                        field: "friend",
+                        message: `failed in making the user friend:   ${err.detail}`,
+                    },
+                ],
+            };
+        }
+        if (friend[1] === 0) {
+            return {
+                updated: false,
+                success: [
+                    {
+                        field: "friend",
+                        message: "you have are already friends",
+                    },
+                ],
+            };
+        }
+        return {
+            updated: true,
+            success: [
+                {
+                    field: "friend",
+                    message: "you have succesfully made a friend",
+                },
+            ],
+        };
+    }
+
+    @Mutation(() => boolResponse)
+    @UseMiddleware(isAuth)
+    async deleteFriends(
+        @Arg("userId") userId: number,
+        @Ctx() { req }: MyContext
+    ): Promise<boolResponse> {
+        let friend;
+        try {
+            friend = await getConnection().query(
+                `
+            delete from user_friends_user
+            where "userId_1"=$1 and "userId_2"=$2
+
+        `,
+                [req.session.userId, userId]
+            );
+        } catch (err) {
+            return {
+                updated: false,
+                errors: [
+                    {
+                        field: "friend",
+                        message: `failed in deleting the user friend:   ${err.detail}`,
+                    },
+                ],
+            };
+        }
+        console.log(friend);
+        if (friend[1] === 0) {
+            return {
+                updated: false,
+                success: [
+                    {
+                        field: "friend",
+                        message: "you have already unfriended the friend",
+                    },
+                ],
+            };
+        }
+        return {
+            updated: true,
+            success: [
+                {
+                    field: "friend",
+                    message: "you have succesfully unfriended a friend",
+                },
+            ],
+        };
+    }
+
+    @Query(() => UsersResponse, { nullable: true })
+    @UseMiddleware(isAuth)
+    async findFriends(@Ctx() { req }: MyContext): Promise<UsersResponse> {
+        const friends = await getConnection().query(
+            ` SELECT *
+            FROM public.user U
+            WHERE U.id <> $1
+            AND EXISTS(
+            SELECT 1
+            FROM user_friends_user F
+            WHERE (F."userId_1" = $1 AND F."userId_2" = U.id )
+            OR (F."userId_2" = $1 AND F."userId_1" = U.id )
+            );  `,
+            [req.session.userId]
+        );
+        if (friends.length === 0) {
+            return {
+                users: friends,
+                success: [
+                    {
+                        field: "friends",
+                        message: "you have no friends",
+                    },
+                ],
+            };
+        }
+        return {
+            users: friends,
+            success: [
+                {
+                    field: "friends",
+                    message: "successfully queryed friends",
+                },
+            ],
+        };
+    }
     @Mutation(() => boolResponse)
     @UseMiddleware(isAuth)
     async profilePic(

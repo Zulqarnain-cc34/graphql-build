@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var User_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const type_graphql_1 = require("type-graphql");
@@ -15,7 +16,7 @@ const typeorm_1 = require("typeorm");
 const Members_1 = require("./Members");
 const Post_1 = require("./Post");
 const Reply_1 = require("./Reply");
-let User = class User extends typeorm_1.BaseEntity {
+let User = User_1 = class User extends typeorm_1.BaseEntity {
 };
 __decorate([
     type_graphql_1.Field(() => type_graphql_1.ID),
@@ -60,10 +61,15 @@ __decorate([
     __metadata("design:type", Array)
 ], User.prototype, "replies", void 0);
 __decorate([
+    typeorm_1.ManyToMany(() => User_1),
+    typeorm_1.JoinTable(),
+    __metadata("design:type", Array)
+], User.prototype, "friends", void 0);
+__decorate([
     typeorm_1.OneToMany(() => Members_1.Members, (member) => member.users),
     __metadata("design:type", Array)
 ], User.prototype, "memberin", void 0);
-User = __decorate([
+User = User_1 = __decorate([
     type_graphql_1.ObjectType(),
     typeorm_1.Entity()
 ], User);
