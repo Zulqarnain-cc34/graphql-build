@@ -37,19 +37,49 @@ const UserObject_1 = require("./Objecttypes/UserObject");
 const isAuth_1 = require("../middlewares/isAuth");
 const Reply_1 = require("../entities/Reply");
 const UpdatedResponse_1 = require("./Objecttypes/matchingtypes/UpdatedResponse");
+const Topics_1 = require("../Topics");
 let UserResolver = class UserResolver {
     Users({}) {
         return __awaiter(this, void 0, void 0, function* () {
             return User_1.User.find({});
         });
     }
-    me({ req }) {
+    me(pubSub, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!req.session.userId) {
                 return undefined;
             }
-            return User_1.User.findOne({ where: { id: req.session.userId } });
+            const user = User_1.User.findOne({ where: { id: req.session.userId } });
+            yield pubSub.publish(Topics_1.Topic.ONLINE_USERS, {
+                user,
+                success: [{ field: "user", message: "user logged is online" }],
+            });
+            return user;
         });
+    }
+    onlineUsers(payload, status) {
+        let onlineusers = [];
+        if (status === "online") {
+            console.log(payload);
+            onlineusers.push(payload);
+        }
+        else if (status === "offline") {
+            console.log(payload);
+            onlineusers.filter((user) => user.user.id !== payload.user.id);
+        }
+        else {
+            return [
+                {
+                    errors: [
+                        {
+                            field: "status",
+                            message: "Unknown status",
+                        },
+                    ],
+                },
+            ];
+        }
+        return onlineusers;
     }
     profilePic(image, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -119,7 +149,7 @@ let UserResolver = class UserResolver {
             };
         });
     }
-    register(username, email, password, { req }) {
+    register(username, email, password, pubSub, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (username.length <= 2) {
                 return {
@@ -210,11 +240,14 @@ let UserResolver = class UserResolver {
                 }
             }
             req.session.userId = user.id;
-            console.log(req.session.userId);
+            yield pubSub.publish(Topics_1.Topic.ONLINE_USERS, {
+                user,
+                success: [{ field: "user", message: "user logged is online" }],
+            });
             return { user };
         });
     }
-    login(usernameorEmail, password, { req }) {
+    login(usernameorEmail, password, pubSub, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.User.findOne(usernameorEmail.includes("@")
                 ? { where: { email: usernameorEmail } }
@@ -241,6 +274,10 @@ let UserResolver = class UserResolver {
                 };
             }
             req.session.userId = user.id;
+            yield pubSub.publish(Topics_1.Topic.ONLINE_USERS, {
+                user,
+                success: [{ field: "user", message: "user logged is online" }],
+            });
             return {
                 user,
             };
@@ -405,11 +442,22 @@ __decorate([
 ], UserResolver.prototype, "Users", null);
 __decorate([
     type_graphql_1.Query(() => User_1.User, { nullable: true }),
-    __param(0, type_graphql_1.Ctx()),
+    __param(0, type_graphql_1.PubSub()),
+    __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [type_graphql_1.PubSubEngine, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "me", null);
+__decorate([
+    type_graphql_1.Subscription(() => [UserObject_1.UserResponse], {
+        topics: Topics_1.Topic.ONLINE_USERS,
+    }),
+    __param(0, type_graphql_1.Root()),
+    __param(1, type_graphql_1.Arg("status")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [UserObject_1.UserResponse, String]),
+    __metadata("design:returntype", Array)
+], UserResolver.prototype, "onlineUsers", null);
 __decorate([
     type_graphql_1.Mutation(() => UpdatedResponse_1.boolResponse),
     type_graphql_1.UseMiddleware(isAuth_1.isAuth),
@@ -424,18 +472,20 @@ __decorate([
     __param(0, type_graphql_1.Arg("username")),
     __param(1, type_graphql_1.Arg("email")),
     __param(2, type_graphql_1.Arg("password")),
-    __param(3, type_graphql_1.Ctx()),
+    __param(3, type_graphql_1.PubSub()),
+    __param(4, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, Object]),
+    __metadata("design:paramtypes", [String, String, String, type_graphql_1.PubSubEngine, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "register", null);
 __decorate([
     type_graphql_1.Mutation(() => UserObject_1.UserResponse),
     __param(0, type_graphql_1.Arg("usernameorEmail")),
     __param(1, type_graphql_1.Arg("password")),
-    __param(2, type_graphql_1.Ctx()),
+    __param(2, type_graphql_1.PubSub()),
+    __param(3, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:paramtypes", [String, String, type_graphql_1.PubSubEngine, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "login", null);
 __decorate([

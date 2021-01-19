@@ -22,26 +22,30 @@ import { Icon } from "./Icon";
 import { useMeQuery } from "../../../generated/graphql";
 import { Skeleton } from "@material-ui/lab";
 import { Imageuploader } from "./Imageuploader";
+import { useStateValue } from "../../../context/stateProvider";
+import { useRef } from "react";
 
 interface SidebarProps {}
 
 export const Sidebar: React.FC<SidebarProps> = () => {
     const [{ data, fetching }] = useMeQuery();
-    console.log(data, fetching);
-    //const handleUploader = (e) => {
-    //    e.preventDefault();
-    //    console.log(imageUploaderRef.current.style);
-    //};
+    const imageuploadRef = useRef<HTMLDivElement>();
+    const { state } = useStateValue();
+    const handleUpload = (e) => {
+        e.preventDefault();
+        state?.ref?.current.classList.add("upload-open");
+        imageuploadRef?.current.classList.add("uploader-blur");
+    };
+    const handleUploadBlur = (e) => {
+        e.preventDefault();
+        if (imageuploadRef?.current.classList.contains("uploader-blur")) {
+            imageuploadRef?.current.classList.remove("uploader-blur");
+        }
+        if (state?.ref?.current.classList.contains("upload-open")) {
+            state?.ref?.current.classList.remove("upload-open");
+        }
+    };
 
-    //const [image, setImage] = useState<string>("");
-    //const imgRef = useRef<HTMLImageElement>();
-    //function uploadimage() {
-    //    console.log("upload image.....");
-    //}
-    //imgRef.current.onclick = (e) => {
-    //    e.preventDefault();
-    //    uploadimage();
-    //};
     //async function uploadimages() {
     //    await uploadimage({ image: image });
     //}
@@ -94,16 +98,23 @@ export const Sidebar: React.FC<SidebarProps> = () => {
                         <Avatar
                             className="sidebar-options-user-avatar"
                             src={data?.me.profilepic}
+                            onClick={handleUpload}
                         />
                     ) : (
-                        <Avatar className="sidebar-options-user-avatar" />
+                        <Avatar
+                            className="sidebar-options-user-avatar"
+                            onClick={handleUpload}
+                        />
                     )}
-                    <div className="imageupload">
-                        {" "}
+                    <div
+                        className="imageupload"
+                        ref={imageuploadRef}
+                        onClick={handleUploadBlur}
+                    >
                         <Imageuploader
                             style={{
                                 position: "absolute",
-                                top: "23%",
+                                top: "17%",
                                 left: "23%",
                             }}
                         />
@@ -122,11 +133,6 @@ export const Sidebar: React.FC<SidebarProps> = () => {
                     </div>
                 </div>
                 <div className="sidebar-groups-bottom">
-                    {/*<div className="createroom">
-                    <RoomComponent>
-                        <Icon type="fonticon" icon={faPlus} />
-                    </RoomComponent>
-                </div>*/}
                     <hr className="sidebar-groups-hr" />
                     <Field fieldname="Direct Messages" type="Rooms" />
                     <Field fieldname="Groups" type="Friends" />

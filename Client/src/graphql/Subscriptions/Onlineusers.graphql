@@ -1,0 +1,13 @@
+subscription OnlineUsers($status: String!) {
+    onlineUsers(status: $status) {
+        user {
+            ...RegularUser
+        }
+        errors {
+            ...RegularError
+        }
+        success {
+            ...RegularSuccess
+        }
+    }
+}

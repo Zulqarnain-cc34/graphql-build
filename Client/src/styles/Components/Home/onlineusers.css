@@ -1,0 +1,35 @@
+.online {
+    display: flex;
+    width: 100%;
+    height: 70px;
+    padding: 0.5rem;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 1px 2.1px -4px rgba(0, 0, 0, 0.017), 0 2.2px 4.7px -4px rgba(0, 0, 0, 0.024), 0 3.8px 8.2px -4px rgba(0, 0, 0, 0.03), 0 6px 13px -4px rgba(0, 0, 0, 0.035), 0 9.3px 20.1px -4px rgba(0, 0, 0, 0.04), 0 14.5px 31.4px -4px rgba(0, 0, 0, 0.046), 0 24px 52.1px -4px rgba(0, 0, 0, 0.055), 0 48px 104px -4px rgba(0, 0, 0, 0.07);
+}
+
+.online-profile {
+    cursor: pointer;
+}
+
+.online-content {
+    display: flex;
+    margin-left: 1rem;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.status-icon {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background-color: rgb(243, 63, 56);
+    -webkit-box-shadow: -1px 3px 16px 1px rgba(255, 0, 0, 1);
+    -moz-box-shadow: -1px 3px 16px 1px rgba(255, 0, 0, 1);
+    box-shadow: -1px 3px 16px 1px rgba(255, 0, 0, 1);
+}
+
+.online:hover {
+    transform: scale(1.04);
+}

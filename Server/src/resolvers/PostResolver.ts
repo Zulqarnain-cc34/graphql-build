@@ -41,6 +41,9 @@ export class PostResolver {
         if (payload === undefined) {
             return undefined;
         }
+        if (roomId !== undefined) {
+            return payload;
+        }
         return payload;
     }
 

@@ -46,7 +46,7 @@ export class RoomResolver {
         @Ctx() { req }: MyContext
     ): Promise<MembersResponse> {
         let rooms;
-
+        console.log(limit);
         //const reallimit = Math.min(limit, 25);
 
         try {

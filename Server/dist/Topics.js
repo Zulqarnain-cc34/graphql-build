@@ -6,5 +6,6 @@ var Topic;
     Topic["NewPost"] = "NEW_POST";
     Topic["NewRoom"] = "NEW_ROOM";
     Topic["GET_ROOM_MESSAGES"] = "GET_ROOM_MESSAGES";
+    Topic["ONLINE_USERS"] = "ONLINE_USERS";
 })(Topic = exports.Topic || (exports.Topic = {}));
 //# sourceMappingURL=Topics.js.map

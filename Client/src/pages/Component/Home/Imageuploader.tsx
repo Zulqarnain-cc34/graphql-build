@@ -5,6 +5,9 @@ import "../../../styles/Components/Home/imageuploader.css";
 import { ButtonComponent } from "../../../styles/Components/Home/ButtonComponent";
 import { FileTypes } from "../../../interfaces";
 import { useUploadImageMutation } from "../../../generated/graphql";
+import { useEffect } from "react";
+import { useStateValue } from "../../../context/stateProvider";
+import { UPLOAD_IMAGE } from "../../../context/actionsTypes";
 interface ImageuploaderProps {
     style?: React.CSSProperties;
 }
@@ -12,13 +15,21 @@ interface ImageuploaderProps {
 export const Imageuploader: React.FC<ImageuploaderProps> = ({ style }) => {
     const inputRef = useRef<HTMLInputElement>();
     const fileRef = useRef<HTMLDivElement>();
+    const uploadRef = useRef<HTMLDivElement>();
+    const { dispatch } = useStateValue();
     const [, uploadimage] = useUploadImageMutation();
     const [loadedfiles, setloadedfiles] = useState<FileTypes[]>([]);
     function fileloaded(file: FileTypes) {
-        console.log(file);
         setloadedfiles([file, ...loadedfiles]);
     }
-
+    useEffect(() => {
+        dispatch({
+            type: UPLOAD_IMAGE,
+            payload: {
+                ref: uploadRef,
+            },
+        });
+    }, [uploadRef]);
     const submitimages = (e) => {
         e.preventDefault();
         loadedfiles.map(
@@ -62,7 +73,7 @@ export const Imageuploader: React.FC<ImageuploaderProps> = ({ style }) => {
     }
 
     return (
-        <div className="imageuploader" style={style}>
+        <div className="imageuploader" style={style} ref={uploadRef}>
             <div className="sub-header">Drag an image</div>
             <div className="draggable-container">
                 <div className="file-preview-container">

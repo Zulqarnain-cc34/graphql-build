@@ -34,6 +34,9 @@ let PostResolver = class PostResolver {
         if (payload === undefined) {
             return undefined;
         }
+        if (roomId !== undefined) {
+            return payload;
+        }
         return payload;
     }
     post(id) {

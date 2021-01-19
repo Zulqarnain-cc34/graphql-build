@@ -39,6 +39,7 @@ let RoomResolver = class RoomResolver {
     getRoom(limit, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
             let rooms;
+            console.log(limit);
             try {
                 rooms = yield typeorm_1.getConnection().query(`select m."userId",m."roomId",m.joined,
                 json_build_object(

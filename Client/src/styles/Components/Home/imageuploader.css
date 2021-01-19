@@ -1,18 +1,48 @@
 .imageuploader {
     display: flex;
     flex-direction: column;
-    width: 70vw;
-    height: 70vh;
+    width: 70%;
+    height: 70%;
     align-items: center;
-    background-color: white;
+    background-color: rgb(8, 8, 8);
     max-height: 600px;
     max-width: 700px;
     min-height: 450px;
     min-width: 300px;
-    z-index: 999;
-    pointer-events: all;
-    transition: all 0.2s ease-in;
+    z-index: 99;
+    pointer-events: none;
     padding: 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease-out;
+    opacity: 0;
+}
+
+.upload-open {
+    animation: upload 0.4s ease-out;
+    opacity: 1;
+    pointer-events: all;
+    background-color: rgb(255, 255, 255);
+}
+
+@keyframes upload {
+    0% {
+        opacity: 0;
+    }
+    20% {
+        opacity: 0.2;
+    }
+    40% {
+        opacity: 0.4;
+    }
+    60% {
+        opacity: 0.6;
+    }
+    80% {
+        opacity: 0.8;
+    }
+    100 {
+        opacity: 1;
+    }
 }
 
 .draggable-container {
@@ -95,12 +125,13 @@
 }
 
 .sub-header {
-    font-size: 1.7rem;
+    font-size: 2rem;
     margin-bottom: 1rem;
+    margin-top: 0.5rem;
 }
 
 .draggable-container-text {
-    font-size: 1.7rem;
+    font-size: 1.8rem;
     position: absolute;
     width: 100%;
     height: 100%;

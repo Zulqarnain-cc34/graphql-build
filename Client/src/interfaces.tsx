@@ -12,19 +12,20 @@ export interface RoomState {
     members: number;
 }
 
-export interface AppStateTypes {
-    user?: UserState;
-    room?: RoomState;
-}
-
-export interface IActionTypes {
-    type: string;
-    payload: AppStateTypes;
-}
-
 export interface FileTypes {
     data: any;
     name: string;
     size: number;
     type: string;
+}
+
+export interface AppStateTypes {
+    user?: UserState;
+    room?: RoomState;
+    ref?: React.MutableRefObject<HTMLDivElement>;
+}
+
+export interface IActionTypes {
+    type: string;
+    payload: AppStateTypes;
 }

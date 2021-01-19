@@ -2,9 +2,11 @@ import { AppStateTypes, IActionTypes } from "../interfaces";
 import * as actionTypes from "./actionsTypes";
 import { InitialState } from "./initialState";
 
-const reducer = (state: AppStateTypes = InitialState, action: IActionTypes): AppStateTypes => {
-
-
+const reducer = (
+    state: AppStateTypes = InitialState,
+    action: IActionTypes
+): AppStateTypes => {
+    console.log(action);
     switch (action.type) {
         case actionTypes.GET_SESSION:
             return {
@@ -18,7 +20,9 @@ const reducer = (state: AppStateTypes = InitialState, action: IActionTypes): App
                 user: null,
             };
         case actionTypes.GET_ROOM:
-            return { ...state, room: action.payload.room }
+            return { ...state, room: action.payload.room };
+        case actionTypes.UPLOAD_IMAGE:
+            return { ...state, ref: action.payload.ref };
         default:
             return state;
     }

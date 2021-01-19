@@ -5,9 +5,13 @@ import {
     Ctx,
     Int,
     Mutation,
+    PubSubEngine,
+    PubSub,
     Query,
     Resolver,
+    Subscription,
     UseMiddleware,
+    Root,
 } from "type-graphql";
 import { MyContext } from "../types";
 import argon2 from "argon2";
@@ -19,6 +23,7 @@ import { UserResponse } from "./Objecttypes/UserObject";
 import { isAuth } from "../middlewares/isAuth";
 import { Reply } from "../entities/Reply";
 import { boolResponse } from "./Objecttypes/matchingtypes/UpdatedResponse";
+import { Topic } from "../Topics";
 @Resolver()
 export class UserResolver {
     @Query(() => [User])
@@ -27,11 +32,48 @@ export class UserResolver {
     }
 
     @Query(() => User, { nullable: true })
-    async me(@Ctx() { req }: MyContext): Promise<User | undefined> {
+    async me(
+        @PubSub() pubSub: PubSubEngine,
+        @Ctx() { req }: MyContext
+    ): Promise<User | undefined> {
         if (!req.session.userId) {
             return undefined;
         }
-        return User.findOne({ where: { id: req.session.userId } });
+        const user = User.findOne({ where: { id: req.session.userId } });
+        await pubSub.publish(Topic.ONLINE_USERS, {
+            user,
+            success: [{ field: "user", message: "user logged is online" }],
+        });
+        return user;
+    }
+
+    @Subscription(() => [UserResponse], {
+        topics: Topic.ONLINE_USERS,
+    })
+    onlineUsers(
+        @Root() payload: UserResponse,
+        @Arg("status") status: string
+    ): UserResponse[] {
+        let onlineusers: UserResponse[] = [];
+        if (status === "online") {
+            console.log(payload);
+            onlineusers.push(payload);
+        } else if (status === "offline") {
+            console.log(payload);
+            onlineusers.filter((user) => user.user.id !== payload.user.id);
+        } else {
+            return [
+                {
+                    errors: [
+                        {
+                            field: "status",
+                            message: "Unknown status",
+                        },
+                    ],
+                },
+            ];
+        }
+        return onlineusers;
     }
 
     @Mutation(() => boolResponse)
@@ -112,6 +154,7 @@ export class UserResolver {
         @Arg("username") username: string,
         @Arg("email") email: string,
         @Arg("password") password: string,
+        @PubSub() pubSub: PubSubEngine,
         @Ctx() { req }: MyContext
     ): Promise<UserResponse> {
         if (username.length <= 2) {
@@ -208,7 +251,10 @@ export class UserResolver {
         }
         //This will autologin the user when registering
         req.session.userId = user.id;
-        console.log(req.session.userId);
+        await pubSub.publish(Topic.ONLINE_USERS, {
+            user,
+            success: [{ field: "user", message: "user logged is online" }],
+        });
         return { user };
     }
 
@@ -216,6 +262,7 @@ export class UserResolver {
     async login(
         @Arg("usernameorEmail") usernameorEmail: string,
         @Arg("password") password: string,
+        @PubSub() pubSub: PubSubEngine,
         @Ctx() { req }: MyContext
     ): Promise<UserResponse> {
         const user = await User.findOne(
@@ -248,6 +295,10 @@ export class UserResolver {
         }
 
         req.session.userId = user.id;
+        await pubSub.publish(Topic.ONLINE_USERS, {
+            user,
+            success: [{ field: "user", message: "user logged is online" }],
+        });
 
         return {
             user,
